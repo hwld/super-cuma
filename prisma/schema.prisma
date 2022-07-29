@@ -69,10 +69,10 @@ model Prefecture {
 model Product {
   id          Int      @id @default(autoincrement())
   productName String
-  unitPrice   String
+  unitPrice   Int
   created     DateTime @default(now())
   modified    DateTime @updatedAt
-  Sale        Sale[]
+  sale        Sale[]
 }
 
 model Sale {
