@@ -9,3 +9,93 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model Customer {
+  id         Int      @id @default(autoincrement())
+  customerCd String
+  name       String
+  kana       String
+  // 1:男 2:女
+  gender     Int
+  zip        String
+  address1   String
+  address2   String
+  phone      String
+  fax        String
+  email      String
+  lasttrade  DateTime
+  twitterId  String
+  facebookId String
+  created    DateTime @default(now())
+  modified   DateTime @updatedAt
+
+  company      Company    @relation(fields: [companyId], references: [id])
+  companyId    Int
+  prefecture   Prefecture @relation(fields: [prefectureId], references: [id])
+  prefectureId Int
+  sale         Sale[]
+}
+
+model Company {
+  id          Int      @id @default(autoincrement())
+  companyName String
+  companyKana String
+  created     DateTime @default(now())
+  modified    DateTime @updatedAt
+
+  customer           Customer[]
+  businessCategory   BusinessCategory @relation(fields: [businessCategoryId], references: [id])
+  businessCategoryId Int
+}
+
+model BusinessCategory {
+  id                   Int      @id @default(autoincrement())
+  businessCategoryName String
+  created              DateTime @default(now())
+  modified             DateTime @updatedAt
+
+  company Company[]
+}
+
+model Prefecture {
+  id       Int      @id @default(autoincrement())
+  prefName String
+  created  DateTime @default(now())
+  modified DateTime @updatedAt
+
+  customer Customer[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  productName String
+  unitPrice   String
+  created     DateTime @default(now())
+  modified    DateTime @updatedAt
+  Sale        Sale[]
+}
+
+model Sale {
+  id           Int      @id @default(autoincrement())
+  purchaseDate DateTime
+  amount       Int
+  created      DateTime @default(now())
+  modified     DateTime @updatedAt
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  Int
+}
+
+model User {
+  id                    Int      @id @default(autoincrement())
+  username              String
+  password              String
+  twitterConsumerKey    String
+  twitterConsumerSecret String
+  facebookAppid         String
+  facebookAppsecret     String
+  created               DateTime @default(now())
+  modified              DateTime @updatedAt
+}
