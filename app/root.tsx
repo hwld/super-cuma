@@ -1,5 +1,4 @@
-import { MantineProvider } from "@mantine/core";
-import type { MetaFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -8,7 +7,6 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { theme } from "./theme";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -16,21 +14,26 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
+export const links: LinksFunction = () => [
+  {
+    rel: "stylesheet",
+    href: "https://unpkg.com/bootstrap@5.2.0/dist/css/bootstrap.min.css",
+  },
+];
+
 export default function App() {
   return (
-    <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
-      <html lang="en">
-        <head>
-          <Meta />
-          <Links />
-        </head>
-        <body>
-          <Outlet />
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </body>
-      </html>
-    </MantineProvider>
+    <html lang="en">
+      <head>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
   );
 }
