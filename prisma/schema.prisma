@@ -11,23 +11,21 @@ datasource db {
 }
 
 model Customer {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   customerCd String
   name       String
   kana       String
   // 1:男 2:女
   gender     Int
-  zip        String
-  address1   String
-  address2   String
+  zip        String?
+  address1   String?
+  address2   String?
   phone      String
-  fax        String
+  fax        String?
   email      String
-  lasttrade  DateTime
-  twitterId  String
-  facebookId String
-  created    DateTime @default(now())
-  modified   DateTime @updatedAt
+  lasttrade  DateTime?
+  created    DateTime  @default(now())
+  modified   DateTime  @updatedAt
 
   company      Company    @relation(fields: [companyId], references: [id])
   companyId    Int

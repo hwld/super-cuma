@@ -189,8 +189,6 @@ async function seed() {
     fax,
     email,
     lasttrade,
-    twitterId,
-    facebookId,
   ] of customers) {
     const data = {
       id,
@@ -207,8 +205,6 @@ async function seed() {
       fax,
       email,
       lasttrade,
-      twitterId,
-      facebookId,
     };
     await db.customer.upsert({
       where: { id },
