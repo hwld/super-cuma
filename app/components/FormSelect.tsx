@@ -4,20 +4,28 @@ import { FormErrorMessage } from "./FormErrorMessage";
 type Props = {
   id: string;
   name: string;
-  items: { label: string; value: string | number }[];
+  items: { label: string; value: string | number | undefined }[];
+  size?: "sm" | "md";
 };
-export const FormSelect: React.VFC<Props> = ({ id, name, items }) => {
+export const FormSelect: React.VFC<Props> = ({
+  id,
+  name,
+  items,
+  size = "md",
+}) => {
   const { getInputProps, error } = useField(name);
 
   return (
     <div>
       <select
-        className={`form-select ${error ? "is-invalid" : ""}`}
+        className={`form-select ${error ? "is-invalid" : ""} ${
+          size === "sm" ? "form-select-sm" : ""
+        }`}
         {...getInputProps({ id })}
       >
-        {items.map((item) => {
+        {items.map((item, i) => {
           return (
-            <option key={item.value} value={item.value}>
+            <option key={i} value={item.value}>
               {item.label}
             </option>
           );

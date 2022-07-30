@@ -1,14 +1,28 @@
-import type { ActionArgs } from "@remix-run/node";
+import type { Prisma } from "@prisma/client";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { Button, Table } from "react-bootstrap";
 import { SearchCustomerForm } from "~/components/SearchCustomerForm";
 import { db } from "~/db.server";
-import { findCustomers } from "~/models/customer";
+import { customerSearchFormSchema } from "~/forms/customerSearchForm";
+import { createCustomersWhere, findCustomers } from "~/models/customer";
+import { findPrefectures } from "~/models/prefecture";
 
-export const loader = async () => {
-  const customers = await findCustomers();
-  return json({ customers });
+export const loader = async ({ request }: LoaderArgs) => {
+  const url = new URL(request.url);
+
+  const searchParams = Object.fromEntries(url.searchParams.entries());
+  const validResult = customerSearchFormSchema.safeParse(searchParams);
+
+  let findCustomersWhere: Prisma.CustomerWhereInput | undefined = undefined;
+  if (validResult.success) {
+    findCustomersWhere = createCustomersWhere(validResult.data);
+  }
+
+  const customers = await findCustomers({ where: findCustomersWhere });
+  const prefectures = await findPrefectures();
+  return json({ customers, prefectures });
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -25,12 +39,14 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Index() {
-  const { customers } = useLoaderData<typeof loader>();
+  const { customers, prefectures } = useLoaderData<typeof loader>();
 
   return (
     <div>
-      <h3>顧客一覧</h3>
-      <SearchCustomerForm />
+      <h3 className="mb-3">顧客一覧</h3>
+      <div className="mb-3">
+        <SearchCustomerForm prefectures={prefectures} method="get" />
+      </div>
       <div className="text-end">
         <Link to="add" className="btn btn-primary">
           新規登録

@@ -1,8 +1,10 @@
+import type { Prefecture } from "@prisma/client";
 import { Button } from "react-bootstrap";
 import { ValidatedForm } from "remix-validated-form";
 import type { z } from "zod";
 import type { customerFormSchema } from "~/forms/customerForm";
 import { customerValidator } from "~/forms/customerForm";
+import type { Company } from "~/models/company";
 import { FormInput } from "./FormInput";
 import { FormLabel } from "./FormLabel";
 import { FormRadio } from "./FormRadio";
@@ -10,8 +12,8 @@ import { FormSelect } from "./FormSelect";
 import { HorizontalFormRow } from "./HorizontalFormRow";
 
 type Props = {
-  companies: { companyName: string; id: number }[];
-  prefectures: { prefName: string; id: number }[];
+  companies: Company[];
+  prefectures: Prefecture[];
   defaultValues?: Partial<z.infer<typeof customerFormSchema>>;
 };
 
@@ -118,7 +120,13 @@ export const CustomerForm: React.VFC<Props> = ({
         input={<FormInput id={buildId("fax")} name="fax" />}
       />
       <HorizontalFormRow
-        label={<FormLabel text="メールアドレス" htmlFor={buildId("email")} />}
+        label={
+          <FormLabel
+            text="メールアドレス"
+            htmlFor={buildId("email")}
+            required
+          />
+        }
         input={<FormInput id={buildId("email")} name="email" />}
       />
       <HorizontalFormRow

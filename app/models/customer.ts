@@ -2,6 +2,8 @@ import { Prisma } from "@prisma/client";
 import { format } from "date-fns";
 import { db } from "~/db.server";
 import type { CustomerForm } from "~/forms/customerForm";
+import type { CustomerSearchForm } from "~/forms/customerSearchForm";
+import { emptyToUndefined } from "~/utils/emptyToUndefined";
 import { nullsToUndefineds } from "~/utils/nullToUndefined";
 import type { Company } from "./company";
 import { companyArgs } from "./company";
@@ -23,7 +25,6 @@ export type Customer = {
   lasttrade?: Date;
   created: Date;
   modified: Date;
-
   company: Company;
   prefecture: Prefecture;
 };
@@ -161,4 +162,33 @@ export const updateCustomer = async (args: UpdateCustomerArgs) => {
     },
     where: args.where,
   });
+};
+
+export const createCustomersWhere = (
+  searchForm: CustomerSearchForm
+): Prisma.CustomerWhereInput => {
+  //空文字をundefinedに変換する
+  const searchParam = emptyToUndefined(searchForm);
+
+  return {
+    customerCd: { contains: searchParam.customerCd },
+    name: { contains: searchParam.name },
+    kana: { contains: searchParam.kana },
+    company: { companyName: { contains: searchParam.companyName } },
+    prefecture: {
+      id: searchParam.prefectureId
+        ? Number(searchParam.prefectureId)
+        : undefined,
+    },
+    phone: { contains: searchParam.phone },
+    email: { contains: searchParam.email },
+    lasttrade: {
+      gte: searchParam.lasttradeStart
+        ? new Date(searchParam.lasttradeStart)
+        : undefined,
+      lte: searchParam.lasttradeEnd
+        ? new Date(searchParam.lasttradeEnd)
+        : undefined,
+    },
+  };
 };

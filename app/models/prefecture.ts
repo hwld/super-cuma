@@ -4,8 +4,6 @@ import { db } from "~/db.server";
 export type Prefecture = {
   id: number;
   prefName: string;
-  created: Date;
-  modified: Date;
 };
 
 export const prefectureArgs = Prisma.validator<Prisma.PrefectureArgs>()({

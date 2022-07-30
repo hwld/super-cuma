@@ -5,8 +5,6 @@ export type Company = {
   id: number;
   companyName: string;
   companyKana: string;
-  created: Date;
-  modified: Date;
 };
 
 export const companyArgs = Prisma.validator<Prisma.CompanyArgs>()({
