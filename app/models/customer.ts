@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { format } from "date-fns";
 import { db } from "~/db.server";
 import type { CustomerForm } from "~/forms/customerForm";
 import { nullsToUndefineds } from "~/utils/nullToUndefined";
@@ -66,7 +67,9 @@ const convertToCustomerForm = (
     ...customer,
     companyId: customer.company.id.toString(),
     prefectureId: customer.prefecture.id.toString(),
-    lasttrade: customer.lasttrade?.toISOString(),
+    lasttrade: customer.lasttrade
+      ? format(new Date(customer.lasttrade), "yyyy-MM-dd")
+      : undefined,
     gender: customer.gender.toString(),
   };
 };
@@ -99,7 +102,9 @@ export const findCustomerForm = async (
     return undefined;
   }
 
-  return convertToCustomerForm(rawCustomer);
+  const customerForm = convertToCustomerForm(rawCustomer);
+
+  return customerForm;
 };
 
 export const createCustomer = async (form: CustomerForm) => {
@@ -117,7 +122,14 @@ export const createCustomer = async (form: CustomerForm) => {
       phone: form.phone,
       fax: form.fax,
       email: form.email,
-      lasttrade: form.lasttrade !== "" ? form.lasttrade : undefined,
+      lasttrade:
+        // lasttradeはyyyy-mm-dd形式で渡ってくるが、タイムゾーンが存在しないので、
+        // タイムゾーンによって日付にずれは出てくる。
+        // まあ、日本でしか使われないってことで・・・
+        // UTCじゃなくてJSTとかで保存するべきかもしれなけど、めんどくさそうなので
+        form.lasttrade !== "" && form.lasttrade !== undefined
+          ? new Date(form.lasttrade).toISOString()
+          : undefined,
     },
   });
 };
@@ -142,7 +154,10 @@ export const updateCustomer = async (args: UpdateCustomerArgs) => {
       phone: form.phone,
       fax: form.fax,
       email: form.email,
-      lasttrade: form.lasttrade !== "" ? form.lasttrade : undefined,
+      lasttrade:
+        form.lasttrade !== "" && form.lasttrade !== undefined
+          ? new Date(form.lasttrade).toISOString()
+          : undefined,
     },
     where: args.where,
   });

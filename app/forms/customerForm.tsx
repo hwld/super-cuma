@@ -35,7 +35,12 @@ export const customerFormSchema = z.object({
     .optional(),
 
   email: z.string().email("メールアドレスを入力してください"),
-  lasttrade: z.string().optional(),
+  lasttrade: z
+    .string()
+    .refine((val) => val === "" || /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(val), {
+      message: "yyyy-mm-dd形式の日付を入力してください",
+    })
+    .optional(),
 });
 
 export type CustomerForm = z.infer<typeof customerFormSchema>;
