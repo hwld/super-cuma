@@ -2,6 +2,7 @@ import type { ActionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { Button, Table } from "react-bootstrap";
+import { SearchCustomerForm } from "~/components/SearchCustomerForm";
 import { db } from "~/db.server";
 import { findCustomers } from "~/models/customer";
 
@@ -29,6 +30,7 @@ export default function Index() {
   return (
     <div>
       <h3>顧客一覧</h3>
+      <SearchCustomerForm />
       <div className="text-end">
         <Link to="add" className="btn btn-primary">
           新規登録

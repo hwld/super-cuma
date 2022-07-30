@@ -3,10 +3,11 @@ import { ValidatedForm } from "remix-validated-form";
 import type { z } from "zod";
 import type { customerFormSchema } from "~/forms/customerForm";
 import { customerValidator } from "~/forms/customerForm";
-import { AppFormInput } from "./AppFormInput";
-import { AppFormRadio } from "./AppFormRadio";
-import { AppFormRow } from "./AppFormRow";
-import { AppFormSelect } from "./AppFormSelect";
+import { FormInput } from "./FormInput";
+import { FormLabel } from "./FormLabel";
+import { FormRadio } from "./FormRadio";
+import { FormSelect } from "./FormSelect";
+import { HorizontalFormRow } from "./HorizontalFormRow";
 
 type Props = {
   companies: { companyName: string; id: number }[];
@@ -19,6 +20,8 @@ export const CustomerForm: React.VFC<Props> = ({
   prefectures,
   defaultValues,
 }) => {
+  const buildId = (id: string) => `customerForm-${id}`;
+
   return (
     <ValidatedForm
       validator={customerValidator}
@@ -26,72 +29,104 @@ export const CustomerForm: React.VFC<Props> = ({
       method="post"
       className="mb-3"
     >
-      <AppFormRow>
-        <AppFormInput label="顧客コード" name="customerCd" required />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormInput label="顧客名" name="name" required />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormInput label="顧客名(カナ)" name="kana" required />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormRadio
-          fieldName="性別"
-          name="gender"
-          items={[
-            { label: "男性", value: "1" },
-            { label: "女性", value: "2" },
-          ]}
-          required
-        />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormSelect
-          name="companyId"
-          label="会社名"
-          items={companies.map((company) => ({
-            label: company.companyName,
-            value: company.id,
-          }))}
-          required
-        />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormInput label="郵便番号" name="zip" />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormSelect
-          name="prefectureId"
-          label="都道府県"
-          items={prefectures.map((pref) => ({
-            label: pref.prefName,
-            value: pref.id,
-          }))}
-          required
-        />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormInput label="住所1" name="address1" />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormInput label="住所2" name="address2" />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormInput label="電話番号" name="phone" required />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormInput label="FAX" name="fax" />
-      </AppFormRow>
-      <AppFormRow>
-        <AppFormInput label="メールアドレス" name="email" required />
-      </AppFormRow>
-      <AppFormRow>
-        {/* ここにdefaultValueが入ってない。 
-        yyyy-mm-dd形式で渡さなきゃいけないのが、ISO 8601形式で日付まで入ってるっぽいからどうにかする */}
-        <AppFormInput label="最終取引日" name="lasttrade" type="date" />
-      </AppFormRow>
-
+      <HorizontalFormRow
+        label={
+          <FormLabel
+            text="顧客コード"
+            required
+            htmlFor={buildId("customerCd")}
+          />
+        }
+        input={<FormInput id={buildId("customerCd")} name="customerCd" />}
+      />
+      <HorizontalFormRow
+        label={<FormLabel text="顧客名" required htmlFor={buildId("name")} />}
+        input={<FormInput id={buildId("name")} name="name" />}
+      />
+      <HorizontalFormRow
+        label={
+          <FormLabel text="顧客名(カナ)" required htmlFor={buildId("kana")} />
+        }
+        input={<FormInput id={buildId("kana")} name="kana" />}
+      />
+      <HorizontalFormRow
+        label={<FormLabel text="性別" required />}
+        input={
+          <FormRadio
+            name="gender"
+            items={[
+              { label: "男性", value: "1" },
+              { label: "女性", value: "2" },
+            ]}
+          />
+        }
+      />
+      <HorizontalFormRow
+        label={
+          <FormLabel text="会社名" required htmlFor={buildId("companyId")} />
+        }
+        input={
+          <FormSelect
+            id={buildId("companyId")}
+            name="companyId"
+            items={companies.map((company) => ({
+              label: company.companyName,
+              value: company.id,
+            }))}
+          />
+        }
+      />
+      <HorizontalFormRow
+        label={<FormLabel text="郵便番号" htmlFor={buildId("zip")} />}
+        input={<FormInput id={buildId("zip")} name="zip" />}
+      />
+      <HorizontalFormRow
+        label={
+          <FormLabel
+            text="都道府県"
+            htmlFor={buildId("prefectureId")}
+            required
+          />
+        }
+        input={
+          <FormSelect
+            id={buildId("prefectureId")}
+            name="prefectureId"
+            items={prefectures.map((pref) => ({
+              label: pref.prefName,
+              value: pref.id,
+            }))}
+          />
+        }
+      />
+      <HorizontalFormRow
+        label={<FormLabel text="住所1" htmlFor={buildId("address1")} />}
+        input={<FormInput id={buildId("address1")} name="address1" />}
+      />
+      <HorizontalFormRow
+        label={<FormLabel text="住所2" htmlFor={buildId("address2")} />}
+        input={<FormInput id={buildId("address2")} name="address2" />}
+      />
+      <HorizontalFormRow
+        label={
+          <FormLabel text="電話番号" required htmlFor={buildId("phone")} />
+        }
+        input={<FormInput id={buildId("phone")} name="phone" />}
+      />
+      <HorizontalFormRow
+        label={<FormLabel text="FAX" htmlFor={buildId("fax")} />}
+        input={<FormInput id={buildId("fax")} name="fax" />}
+      />
+      <HorizontalFormRow
+        label={<FormLabel text="メールアドレス" htmlFor={buildId("email")} />}
+        input={<FormInput id={buildId("email")} name="email" />}
+      />
+      <HorizontalFormRow
+        label={<FormLabel text="最終取引日" htmlFor={buildId("lasttrade")} />}
+        input={
+          <FormInput id={buildId("lasttrade")} name="lasttrade" type="date" />
+        }
+      />
       <div className="text-end">
         <Button type="submit">
           {defaultValues === undefined ? "登録" : "更新"}
