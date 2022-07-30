@@ -3,16 +3,14 @@ import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { validationError } from "remix-validated-form";
 import { CustomerForm } from "~/components/CustomerForm";
-import { db } from "~/db.server";
 import { customerValidator } from "~/forms/customerForm";
+import { findCompanies } from "~/models/company";
+import { createCustomer } from "~/models/customer";
+import { findPrefectures } from "~/models/prefecture";
 
 export const loader = async () => {
-  const companies = await db.company.findMany({
-    select: { id: true, companyName: true },
-  });
-  const prefectures = await db.prefecture.findMany({
-    select: { id: true, prefName: true },
-  });
+  const companies = await findCompanies();
+  const prefectures = await findPrefectures();
 
   return json({ companies, prefectures });
 };
@@ -24,40 +22,7 @@ export const action = async ({ request }: ActionArgs) => {
     return validationError(result.error);
   }
 
-  const {
-    customerCd,
-    name,
-    kana,
-    gender,
-    companyId,
-    zip,
-    prefectureId,
-    address1,
-    address2,
-    phone,
-    fax,
-    email,
-    lasttrade,
-  } = result.data;
-
-  await db.customer.create({
-    data: {
-      customerCd,
-      name,
-      kana,
-      gender: parseInt(gender),
-      company: { connect: { id: parseInt(companyId) } },
-      zip,
-      prefecture: { connect: { id: parseInt(prefectureId) } },
-      address1,
-      address2,
-      phone,
-      fax,
-      email,
-      lasttrade: lasttrade !== "" ? lasttrade : null,
-    },
-  });
-
+  await createCustomer(result.data);
   return redirect("/customers");
 };
 

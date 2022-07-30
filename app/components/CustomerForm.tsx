@@ -93,7 +93,9 @@ export const CustomerForm: React.VFC<Props> = ({
       </AppFormRow>
 
       <div className="text-end">
-        <Button type="submit">登録</Button>
+        <Button type="submit">
+          {defaultValues === undefined ? "登録" : "更新"}
+        </Button>
       </div>
     </ValidatedForm>
   );

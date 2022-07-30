@@ -37,4 +37,7 @@ export const customerFormSchema = z.object({
   email: z.string().email("メールアドレスを入力してください"),
   lasttrade: z.string().optional(),
 });
+
+export type CustomerForm = z.infer<typeof customerFormSchema>;
+
 export const customerValidator = withZod(customerFormSchema);

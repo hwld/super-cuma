@@ -3,12 +3,10 @@ import { json } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { Button, Table } from "react-bootstrap";
 import { db } from "~/db.server";
+import { findCustomers } from "~/models/customer";
 
 export const loader = async () => {
-  const customers = await db.customer.findMany({
-    include: { company: true, prefecture: true },
-  });
-
+  const customers = await findCustomers();
   return json({ customers });
 };
 

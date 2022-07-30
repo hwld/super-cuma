@@ -3,9 +3,10 @@ import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { validationError } from "remix-validated-form";
 import { CustomerForm } from "~/components/CustomerForm";
-import { db } from "~/db.server";
 import { customerValidator } from "~/forms/customerForm";
-import { nullsToUndefined } from "~/utils/nullToUndefined";
+import { findCompanies } from "~/models/company";
+import { findCustomerForm, updateCustomer } from "~/models/customer";
+import { findPrefectures } from "~/models/prefecture";
 
 export const loader = async ({ params }: LoaderArgs) => {
   if (typeof params.id !== "string") {
@@ -13,23 +14,11 @@ export const loader = async ({ params }: LoaderArgs) => {
   }
   const customerId = Number(params.id);
 
-  const companies = await db.company.findMany({
-    select: { id: true, companyName: true },
-  });
-  const prefectures = await db.prefecture.findMany({
-    select: { id: true, prefName: true },
-  });
-  const rawCustomer = await db.customer.findUnique({
-    where: { id: customerId },
-  });
-  const customer = {
-    ...rawCustomer,
-    gender: rawCustomer?.gender.toString(),
-    companyId: rawCustomer?.companyId.toString(),
-    prefectureId: rawCustomer?.prefectureId.toString(),
-  };
+  const companies = await findCompanies();
+  const prefectures = await findPrefectures();
+  const customerForm = await findCustomerForm({ where: { id: customerId } });
 
-  return json({ companies, prefectures, customer: nullsToUndefined(customer) });
+  return json({ companies, prefectures, customerForm });
 };
 
 export const action = async ({ request, params }: ActionArgs) => {
@@ -43,45 +32,13 @@ export const action = async ({ request, params }: ActionArgs) => {
     return validationError(result.error);
   }
 
-  const {
-    customerCd,
-    name,
-    kana,
-    gender,
-    companyId,
-    zip,
-    prefectureId,
-    address1,
-    address2,
-    phone,
-    fax,
-    email,
-    lasttrade,
-  } = result.data;
-  await db.customer.update({
-    data: {
-      customerCd,
-      name,
-      kana,
-      gender: Number(gender),
-      company: { connect: { id: Number(companyId) } },
-      zip,
-      prefecture: { connect: { id: Number(prefectureId) } },
-      address1,
-      address2,
-      phone,
-      fax,
-      email,
-      lasttrade: lasttrade !== "" ? lasttrade : null,
-    },
-    where: { id: customerId },
-  });
-
+  await updateCustomer({ form: result.data, where: { id: customerId } });
   return redirect("/customers");
 };
 
 export default function EditCustomer() {
-  const { companies, prefectures, customer } = useLoaderData<typeof loader>();
+  const { companies, prefectures, customerForm } =
+    useLoaderData<typeof loader>();
 
   return (
     <div>
@@ -89,7 +46,7 @@ export default function EditCustomer() {
       <CustomerForm
         companies={companies}
         prefectures={prefectures}
-        defaultValues={customer}
+        defaultValues={customerForm}
       />
     </div>
   );
