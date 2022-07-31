@@ -3,10 +3,12 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { Button, Table } from "react-bootstrap";
+import { Pagination } from "~/components/Pagination";
 import { SearchCustomerForm } from "~/components/SearchCustomerForm";
 import { db } from "~/db.server";
 import { customerSearchFormSchema } from "~/forms/customerSearchForm";
-import { createCustomersWhere, findCustomers } from "~/models/customer";
+import { pagingFormSchema } from "~/forms/pagingForm";
+import { buildCustomersWhere, findCustomers } from "~/models/customer";
 import { findPrefectures } from "~/models/prefecture";
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -17,12 +19,33 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   let findCustomersWhere: Prisma.CustomerWhereInput | undefined = undefined;
   if (validResult.success) {
-    findCustomersWhere = createCustomersWhere(validResult.data);
+    findCustomersWhere = buildCustomersWhere(validResult.data);
   }
 
-  const customers = await findCustomers({ where: findCustomersWhere });
+  const limit = 3;
+  let currentPage = 1;
+
+  const pagingFormValidResult = pagingFormSchema.safeParse(searchParams);
+  if (pagingFormValidResult.success) {
+    const page = Number(pagingFormValidResult.data.page);
+    if (!isNaN(page)) {
+      currentPage = page;
+    }
+  }
+
+  const customers = await findCustomers({
+    where: findCustomersWhere,
+    skip: (currentPage - 1) * limit,
+    take: limit,
+  });
   const prefectures = await findPrefectures();
-  return json({ customers, prefectures });
+
+  const allCustomersCount = await db.customer.count({
+    where: findCustomersWhere,
+  });
+  const allPages = Math.ceil(allCustomersCount / limit);
+
+  return json({ customers, prefectures, allPages });
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -39,7 +62,7 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Index() {
-  const { customers, prefectures } = useLoaderData<typeof loader>();
+  const { customers, prefectures, allPages } = useLoaderData<typeof loader>();
 
   return (
     <div>
@@ -111,6 +134,7 @@ export default function Index() {
           })}
         </tbody>
       </Table>
+      <Pagination allPages={allPages} />
     </div>
   );
 }

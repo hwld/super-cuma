@@ -164,7 +164,7 @@ export const updateCustomer = async (args: UpdateCustomerArgs) => {
   });
 };
 
-export const createCustomersWhere = (
+export const buildCustomersWhere = (
   searchForm: CustomerSearchForm
 ): Prisma.CustomerWhereInput => {
   //空文字をundefinedに変換する
