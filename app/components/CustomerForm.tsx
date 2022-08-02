@@ -1,10 +1,10 @@
-import type { Prefecture } from "@prisma/client";
 import { Button } from "react-bootstrap";
 import { ValidatedForm } from "remix-validated-form";
 import type { z } from "zod";
 import type { customerFormSchema } from "~/forms/customerForm";
 import { customerValidator } from "~/forms/customerForm";
 import type { Company } from "~/models/company";
+import type { Prefecture } from "~/models/prefecture";
 import { FormInput } from "./FormInput";
 import { FormLabel } from "./FormLabel";
 import { FormRadio } from "./FormRadio";
