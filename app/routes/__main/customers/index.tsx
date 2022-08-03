@@ -5,9 +5,13 @@ import { Form, Link, useLoaderData } from "@remix-run/react";
 import { Button, Table } from "react-bootstrap";
 import { Pagination } from "~/components/Pagination";
 import { SearchCustomerForm } from "~/components/SearchCustomerForm";
+import { SortableTh } from "~/components/SortableTh";
 import { db } from "~/db.server";
 import { customerSearchFormSchema } from "~/forms/customerSearchForm";
 import { pagingFormSchema } from "~/forms/pagingForm";
+import { sortCustomerFormSchema } from "~/forms/sortCustomerForm";
+import { useSortCustomerState } from "~/libs/useSortCustomerState";
+import type { Customer } from "~/models/customer";
 import { buildCustomersWhere, findCustomers } from "~/models/customer";
 import { findPrefectures } from "~/models/prefecture";
 
@@ -22,6 +26,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     findCustomersWhere = buildCustomersWhere(validResult.data);
   }
 
+  // ページング
   const limit = 3;
   let currentPage = 1;
 
@@ -33,10 +38,27 @@ export const loader = async ({ request }: LoaderArgs) => {
     }
   }
 
+  // ソート
+  let orderBy:
+    | Prisma.Enumerable<Prisma.CustomerOrderByWithRelationInput>
+    | undefined = undefined;
+  const sortFormValidResult = sortCustomerFormSchema.safeParse(searchParams);
+  if (sortFormValidResult.success) {
+    const sortData = sortFormValidResult.data;
+    if (sortData.orderBy === "company") {
+      orderBy = { company: { companyName: sortData.order } };
+    } else if (sortData.orderBy === "prefecture") {
+      orderBy = { prefecture: { prefName: sortData.order } };
+    } else {
+      orderBy = { [sortData.orderBy]: sortData.order };
+    }
+  }
+
   const customers = await findCustomers({
     where: findCustomersWhere,
     skip: (currentPage - 1) * limit,
     take: limit,
+    orderBy,
   });
   const prefectures = await findPrefectures();
 
@@ -64,6 +86,20 @@ export const action = async ({ request }: ActionArgs) => {
 export default function Index() {
   const { customers, prefectures, allPages } = useLoaderData<typeof loader>();
 
+  const sortableHeaders: { field: keyof Customer; name: string }[] = [
+    { field: "customerCd", name: "顧客コード" },
+    { field: "name", name: "顧客名" },
+    { field: "kana", name: "顧客名(カナ)" },
+    { field: "company", name: "会社名" },
+    { field: "prefecture", name: "都道府県" },
+    { field: "phone", name: "電話番号" },
+    { field: "email", name: "Email" },
+  ];
+
+  const [sortState, setSearchParam] = useSortCustomerState({
+    defaultValue: { orderBy: sortableHeaders[0].field, order: "asc" },
+  });
+
   return (
     <div>
       <h3 className="mb-3">顧客一覧</h3>
@@ -78,14 +114,19 @@ export default function Index() {
       <Table>
         <thead>
           <tr>
-            <th>顧客コード</th>
-            <th>顧客名</th>
-            <th>顧客名(カナ)</th>
-            <th>会社名</th>
-            <th>都道府県</th>
-            <th>電話番号</th>
-            <th>Email</th>
-            <th>更新・削除</th>
+            {sortableHeaders.map(({ field, name }) => {
+              return (
+                <SortableTh
+                  key={field}
+                  field={field}
+                  sortState={sortState}
+                  setSortState={setSearchParam}
+                >
+                  {name}
+                </SortableTh>
+              );
+            })}
+            <th className="user-select-none">更新・削除</th>
           </tr>
         </thead>
         <tbody>
