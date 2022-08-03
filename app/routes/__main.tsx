@@ -16,9 +16,15 @@ export default function Main() {
               <AppLink to="/customers">顧客</AppLink>
               <AppLink to="/sales">売上</AppLink>
               <NavDropdown title="データ集計" id="basic-nav-dropdown">
-                <NavDropdown.Item href="#action/3.1">A</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.2">B</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.3">C</NavDropdown.Item>
+                <NavDropdown.Item href="/datatotals/industry">
+                  業種ごとの顧客数
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/datatotals/">
+                  製品別売上ランキング
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/datatotals">
+                  平均客単価
+                </NavDropdown.Item>
               </NavDropdown>
               <Nav.Link>ユーザー</Nav.Link>
               <Nav.Link>ログアウト</Nav.Link>
