@@ -1,12 +1,18 @@
 import type { FormMethod } from "@remix-run/react";
 import { Link, useSearchParams } from "@remix-run/react";
+import { useMemo } from "react";
 import { Button, Card } from "react-bootstrap";
 import { ValidatedForm } from "remix-validated-form";
-import { customerSearchValidator } from "~/forms/customerSearchForm";
+import {
+  customerSearchFormSchema,
+  customerSearchValidator,
+} from "~/forms/customerSearchForm";
 import type { Prefecture } from "~/models/prefecture";
 import { FormInput } from "./FormInput";
 import { FormLabel } from "./FormLabel";
 import { FormSelect } from "./FormSelect";
+
+const formFields = Object.keys(customerSearchFormSchema.shape);
 
 type Props = { prefectures: Prefecture[]; method: FormMethod };
 export const SearchCustomerForm: React.VFC<Props> = ({
@@ -16,6 +22,15 @@ export const SearchCustomerForm: React.VFC<Props> = ({
   const buildId = (id: string) => `searchCustomerForm-${id}`;
 
   const [searchParams] = useSearchParams();
+
+  const resetUrl = useMemo(() => {
+    // 検索フォームに関係するクエリを削除したパスを作成する
+    const params = new URLSearchParams(searchParams);
+    formFields.forEach((field) => {
+      params.delete(field);
+    });
+    return `?${params.toString()}`;
+  }, [searchParams]);
 
   return (
     <Card>
@@ -96,7 +111,11 @@ export const SearchCustomerForm: React.VFC<Props> = ({
             <Button type="submit" className="px-3 py-1 me-1">
               検索
             </Button>
-            <Link to="." className="px-3 py-1 btn-secondary btn" reloadDocument>
+            <Link
+              to={resetUrl}
+              className="px-3 py-1 btn-secondary btn"
+              reloadDocument
+            >
               クリア
             </Link>
           </div>

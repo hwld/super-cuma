@@ -97,7 +97,7 @@ export default function Index() {
   ];
 
   const [sortState, setSearchParam] = useSortCustomerState({
-    defaultValue: { orderBy: sortableHeaders[0].field, order: "asc" },
+    defaultValue: { orderBy: "", order: "asc" },
   });
 
   return (
