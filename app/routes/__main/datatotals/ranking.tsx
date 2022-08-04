@@ -17,14 +17,17 @@ type SalesRanking = Omit<RawSalesRanking, "sumAmount"> & {
 
 export const loader = async (args: LoaderArgs) => {
   const raw = (await db.$queryRaw`
-  select productName
-  , avg(unitPrice) as unitPrice
-  , sum(amount) as sumAmount
-  , avg(unitPrice) * sum(amount) as sumSales
-  from sale
-  left join product on (sale.productId = product.id)
-  group by productName
-  order by sumSales desc
+  SELECT
+    productName
+    , AVG(unitPrice) AS unitPrice
+    , SUM(amount) AS sumAmount
+    , AVG(unitPrice) * SUM(amount) AS sumSales
+  FROM
+    sale
+    LEFT JOIN product 
+      ON(sale.productId = product.id)
+  GROUP BY productName
+  ORDER BY sumSales DESC
   `) as RawSalesRanking[];
   const salesByProduct = raw.map((sales, i): SalesRanking => {
     return { ...sales, sumAmount: Number(sales.sumAmount), ranking: i + 1 };

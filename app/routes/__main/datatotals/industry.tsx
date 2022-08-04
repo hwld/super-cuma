@@ -15,12 +15,19 @@ type CustomersByIndustry = {
 
 export const loader = async (args: LoaderArgs) => {
   const raw = (await db.$queryRaw`
-  select businessCategoryName, count(cu.id) as customerCount
-  from BusinessCategory as bc
-  left outer join Company as co on (co.businessCategoryId = bc.id)
-  left outer join Customer as cu on (cu.companyId = co.id)
-  group by businessCategoryName
-  order by customerCount desc
+  SELECT
+    businessCategoryName,
+    COUNT(cu.id) AS customerCount
+  FROM
+    BusinessCategory AS bc
+    LEFT JOIN Company AS co 
+      ON(co.businessCategoryId = bc.id)
+    LEFT JOIN Customer AS cu
+      ON(cu.companyId = co.id)
+  GROUP BY
+    businessCategoryName
+  ORDER BY
+    customerCount DESC
   `) as RawCustomersByIndustry[];
   const customersByIndustry: CustomersByIndustry[] = raw.map((result) => {
     return {
