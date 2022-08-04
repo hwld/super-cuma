@@ -90,10 +90,10 @@ model User {
   id                    Int      @id @default(autoincrement())
   username              String
   password              String
-  twitterConsumerKey    String
-  twitterConsumerSecret String
-  facebookAppid         String
-  facebookAppsecret     String
+  twitterConsumerKey    String?
+  twitterConsumerSecret String?
+  facebookAppid         String?
+  facebookAppsecret     String?
   created               DateTime @default(now())
   modified              DateTime @updatedAt
 }
