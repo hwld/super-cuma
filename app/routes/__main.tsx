@@ -22,7 +22,7 @@ export default function Main() {
                 <NavDropdown.Item href="/datatotals/ranking">
                   製品別売上ランキング
                 </NavDropdown.Item>
-                <NavDropdown.Item href="/datatotals">
+                <NavDropdown.Item href="/datatotals/avg">
                   平均客単価
                 </NavDropdown.Item>
               </NavDropdown>

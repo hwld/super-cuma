@@ -19,7 +19,7 @@ export const loader = async (args: LoaderArgs) => {
     businessCategoryName,
     COUNT(cu.id) AS customerCount
   FROM
-    BusinessCategory AS bc
+    businessCategory AS bc
     LEFT JOIN Company AS co 
       ON(co.businessCategoryId = bc.id)
     LEFT JOIN Customer AS cu
