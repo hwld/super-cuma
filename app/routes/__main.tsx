@@ -19,7 +19,7 @@ export default function Main() {
                 <NavDropdown.Item href="/datatotals/industry">
                   業種ごとの顧客数
                 </NavDropdown.Item>
-                <NavDropdown.Item href="/datatotals/">
+                <NavDropdown.Item href="/datatotals/ranking">
                   製品別売上ランキング
                 </NavDropdown.Item>
                 <NavDropdown.Item href="/datatotals">
