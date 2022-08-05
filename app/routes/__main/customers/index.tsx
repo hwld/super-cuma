@@ -17,10 +17,15 @@ import {
   findCustomers,
 } from "~/models/customer/finder.server";
 import { findPrefectures } from "~/models/prefecture/finder.server";
+import { authenticator } from "~/services/auth.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const url = new URL(request.url);
+  const user = await authenticator.isAuthenticated(request, {
+    failureRedirect: "/login",
+  });
 
+  // 検索
+  const url = new URL(request.url);
   const searchParams = Object.fromEntries(url.searchParams.entries());
   const validResult = customerSearchFormSchema.safeParse(searchParams);
 
@@ -70,11 +75,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   });
   const allPages = Math.ceil(allCustomersCount / limit);
 
-  return json({ customers, prefectures, allPages });
+  return json({ customers, prefectures, allPages, user });
 };
 
 export default function Index() {
-  const { customers, prefectures, allPages } = useLoaderData<typeof loader>();
+  const { customers, prefectures, allPages, user } =
+    useLoaderData<typeof loader>();
   const fetcher = useFetcher();
 
   const sortableHeaders: { field: keyof Customer; name: string }[] = [
@@ -97,11 +103,13 @@ export default function Index() {
       <div className="mb-3">
         <SearchCustomerForm prefectures={prefectures} method="get" />
       </div>
-      <div className="text-end">
-        <Link to="add" className="btn btn-primary">
-          新規登録
-        </Link>
-      </div>
+      {user.isAdmin && (
+        <div className="text-end">
+          <Link to="add" className="btn btn-primary">
+            新規登録
+          </Link>
+        </div>
+      )}
       <Table>
         <thead>
           <tr>
@@ -117,7 +125,7 @@ export default function Index() {
                 </SortableTh>
               );
             })}
-            <th className="user-select-none">更新・削除</th>
+            {user.isAdmin && <th className="user-select-none">更新・削除</th>}
           </tr>
         </thead>
         <tbody>
@@ -131,37 +139,39 @@ export default function Index() {
                 <td>{customer.prefecture.prefName}</td>
                 <td>{customer.phone}</td>
                 <td>{customer.email}</td>
-                <td>
-                  <div className="d-flex gap-1">
-                    <Link
-                      to={`/customers/edit/${customer.id}`}
-                      className="btn btn-success btn-sm"
-                    >
-                      更新
-                    </Link>
-                    <fetcher.Form
-                      action={`delete/${customer.id}`}
-                      method="delete"
-                      onSubmit={(e) => {
-                        const result = window.confirm(
-                          `顧客名: ${customer.name} を削除しても良いですか?`
-                        );
-                        if (!result) {
-                          e.preventDefault();
-                        }
-                      }}
-                    >
-                      <input
-                        hidden
-                        name="customerId"
-                        defaultValue={customer.id}
-                      />
-                      <Button type="submit" className="btn btn-danger btn-sm">
-                        削除
-                      </Button>
-                    </fetcher.Form>
-                  </div>
-                </td>
+                {user.isAdmin && (
+                  <td>
+                    <div className="d-flex gap-1">
+                      <Link
+                        to={`/customers/edit/${customer.id}`}
+                        className="btn btn-success btn-sm"
+                      >
+                        更新
+                      </Link>
+                      <fetcher.Form
+                        action={`delete/${customer.id}`}
+                        method="delete"
+                        onSubmit={(e) => {
+                          const result = window.confirm(
+                            `顧客名: ${customer.name} を削除しても良いですか?`
+                          );
+                          if (!result) {
+                            e.preventDefault();
+                          }
+                        }}
+                      >
+                        <input
+                          hidden
+                          name="customerId"
+                          defaultValue={customer.id}
+                        />
+                        <Button type="submit" className="btn btn-danger btn-sm">
+                          削除
+                        </Button>
+                      </fetcher.Form>
+                    </div>
+                  </td>
+                )}
               </tr>
             );
           })}

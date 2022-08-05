@@ -8,6 +8,7 @@ const userArgs = Prisma.validator<Prisma.UserArgs>()({
   select: {
     id: true,
     username: true,
+    isAdmin: true,
   },
 });
 
@@ -26,13 +27,14 @@ export const login = async ({
     return undefined;
   }
 
-  return { id: user.id, username: user.username };
+  return { id: user.id, username: user.username, isAdmin: user.isAdmin };
 };
 
 type Result = { type: "error"; message: string } | { type: "success" };
 export const createUser = async ({
   username,
   password,
+  isAdmin,
 }: UserForm): Promise<Result> => {
   const sameUsernameUser = await db.user.findFirst({ where: { username } });
   if (sameUsernameUser) {
@@ -40,13 +42,19 @@ export const createUser = async ({
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  await db.user.create({ data: { username, password: hashedPassword } });
+  await db.user.create({
+    data: {
+      username,
+      password: hashedPassword,
+      isAdmin: isAdmin === "true" ? true : false,
+    },
+  });
   return { type: "success" };
 };
 
 export const editUser = async (
   id: number,
-  { username, password }: UserForm
+  { username, password, isAdmin }: UserForm
 ): Promise<Result> => {
   const user = await db.user.findUnique({ where: { id } });
   if (user === null) {
@@ -55,7 +63,11 @@ export const editUser = async (
 
   const hashedPassword = await bcrypt.hash(password, 10);
   await db.user.update({
-    data: { username, password: hashedPassword },
+    data: {
+      username,
+      password: hashedPassword,
+      isAdmin: isAdmin === "true" ? true : undefined,
+    },
     where: { id },
   });
   return { type: "success" };
@@ -65,7 +77,11 @@ type FindUsersArgs = Omit<Prisma.UserFindManyArgs, "select" | "include">;
 export const findUsers = async (args?: FindUsersArgs) => {
   const rawUsers = await db.user.findMany({ ...userArgs, ...args });
   const users = rawUsers.map(
-    (raw): User => ({ id: raw.id, username: raw.username })
+    (raw): User => ({
+      id: raw.id,
+      username: raw.username,
+      isAdmin: raw.isAdmin,
+    })
   );
 
   return users;

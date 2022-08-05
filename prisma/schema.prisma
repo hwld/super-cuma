@@ -87,9 +87,11 @@ model Sale {
 }
 
 model User {
-  id                    Int      @id @default(autoincrement())
-  username              String
-  password              String
+  id       Int     @id @default(autoincrement())
+  username String
+  password String
+  isAdmin  Boolean @default(false)
+
   twitterConsumerKey    String?
   twitterConsumerSecret String?
   facebookAppid         String?

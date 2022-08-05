@@ -1,3 +1,4 @@
+import { json } from "@remix-run/node";
 import { Authenticator } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
 import { loginFormSchema } from "~/forms/loginForm";
@@ -11,15 +12,13 @@ export const authenticator = new Authenticator<User>(sessionStorage, {
 });
 
 authenticator.use(
-  new FormStrategy(async ({ form }) => {
+  new FormStrategy(async ({ form }): Promise<User> => {
     const validResult = loginFormSchema.safeParse(
       Object.fromEntries(form.entries())
     );
     if (!validResult.success) {
       throw new Error("データが正しく送信されませんでした。");
     }
-
-    // TODO:パースに失敗したときはフォームエラーを返したい。
 
     const user = await login(validResult.data);
     if (!user) {
@@ -30,3 +29,20 @@ authenticator.use(
   }),
   "user-pass"
 );
+
+export const requireAuthentication = async (
+  request: Request,
+  condition?: (user: User) => boolean
+): Promise<User> => {
+  const user = await authenticator.isAuthenticated(request, {
+    failureRedirect: "/login",
+  });
+
+  if (condition !== undefined) {
+    if (!condition(user)) {
+      throw json(null, { status: 403 });
+    }
+  }
+
+  return user;
+};

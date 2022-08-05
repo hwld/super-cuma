@@ -2,6 +2,7 @@ import { Button } from "react-bootstrap";
 import { ValidatedForm } from "remix-validated-form";
 import type { UserForm as UserFormData } from "~/forms/userForm";
 import { userFormValidator } from "~/forms/userForm";
+import { FormCheckbox } from "./FormCheckbox";
 import { FormInput } from "./FormInput";
 import { FormLabel } from "./FormLabel";
 import { HorizontalFormRow } from "./HorizontalFormRow";
@@ -9,9 +10,14 @@ import { HorizontalFormRow } from "./HorizontalFormRow";
 type Props = {
   defaultValues?: Partial<UserFormData>;
   formError?: string;
+  adminLoggedIn?: boolean;
 };
 
-export const UserForm: React.VFC<Props> = ({ defaultValues, formError }) => {
+export const UserForm: React.VFC<Props> = ({
+  defaultValues,
+  formError,
+  adminLoggedIn = false,
+}) => {
   return (
     <ValidatedForm
       validator={userFormValidator}
@@ -38,6 +44,12 @@ export const UserForm: React.VFC<Props> = ({ defaultValues, formError }) => {
           />
         }
       />
+      {adminLoggedIn && (
+        <HorizontalFormRow
+          input={<FormCheckbox label="管理者" name="isAdmin" value="true" />}
+        />
+      )}
+
       <div className="text-end">
         <Button type="submit">
           {defaultValues === undefined ? "登録" : "更新"}

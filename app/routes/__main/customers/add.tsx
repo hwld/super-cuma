@@ -1,4 +1,4 @@
-import type { ActionArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { validationError } from "remix-validated-form";
@@ -7,8 +7,11 @@ import { customerValidator } from "~/forms/customerForm";
 import { findCompanies } from "~/models/company/finder.server";
 import { createCustomer } from "~/models/customer/finder.server";
 import { findPrefectures } from "~/models/prefecture/finder.server";
+import { requireAuthentication } from "~/services/auth.server";
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderArgs) => {
+  await requireAuthentication(request, (user) => user.isAdmin);
+
   const companies = await findCompanies();
   const prefectures = await findPrefectures();
 
@@ -16,6 +19,8 @@ export const loader = async () => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
+  await requireAuthentication(request, (user) => user.isAdmin);
+
   const result = await customerValidator.validate(await request.formData());
 
   if (result.error) {
@@ -27,12 +32,15 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Add() {
-  const { companies, prefectures } = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
 
   return (
     <div>
       <h3 className="mb-4">顧客登録</h3>
-      <CustomerForm companies={companies} prefectures={prefectures} />
+      <CustomerForm
+        companies={loaderData?.companies ?? []}
+        prefectures={loaderData?.prefectures ?? []}
+      />
     </div>
   );
 }

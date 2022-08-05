@@ -29,6 +29,8 @@ export const action = async ({ request }: ActionArgs) => {
     return redirect("/customers");
   } catch (e) {
     if (e instanceof AuthorizationError) {
+      //　クライアント側でもバリデーションを行うことを考えると、
+      // サーバー側でバリデーションが失敗したときはシンプルに401を返すだけでいいかも
       return json({ message: e.message });
     }
     throw e;

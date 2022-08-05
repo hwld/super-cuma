@@ -10,8 +10,11 @@ import {
   updateCustomer,
 } from "~/models/customer/finder.server";
 import { findPrefectures } from "~/models/prefecture/finder.server";
+import { requireAuthentication } from "~/services/auth.server";
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
+  await requireAuthentication(request, (user) => user.isAdmin);
+
   if (typeof params.id !== "string") {
     throw new Error("不正なリクエストです");
   }
@@ -25,6 +28,8 @@ export const loader = async ({ params }: LoaderArgs) => {
 };
 
 export const action = async ({ request, params }: ActionArgs) => {
+  await requireAuthentication(request, (user) => user.isAdmin);
+
   if (typeof params.id !== "string") {
     throw new Error("不正なリクエストです");
   }
