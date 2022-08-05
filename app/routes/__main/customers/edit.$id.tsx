@@ -4,9 +4,12 @@ import { useLoaderData } from "@remix-run/react";
 import { validationError } from "remix-validated-form";
 import { CustomerForm } from "~/components/CustomerForm";
 import { customerValidator } from "~/forms/customerForm";
-import { findCompanies } from "~/models/company";
-import { findCustomerForm, updateCustomer } from "~/models/customer";
-import { findPrefectures } from "~/models/prefecture";
+import { findCompanies } from "~/models/company/finder.server";
+import {
+  findCustomerForm,
+  updateCustomer,
+} from "~/models/customer/finder.server";
+import { findPrefectures } from "~/models/prefecture/finder.server";
 
 export const loader = async ({ params }: LoaderArgs) => {
   if (typeof params.id !== "string") {

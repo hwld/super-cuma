@@ -1,6 +1,14 @@
+import type { LoaderArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Link, Outlet } from "@remix-run/react";
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Button, Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { AppLink } from "~/components/AppLink";
+import { authenticator } from "~/services/auth.server";
+
+export const loader = async ({ request }: LoaderArgs) => {
+  await authenticator.isAuthenticated(request, { failureRedirect: "/login" });
+  return json(null);
+};
 
 export default function Main() {
   return (
@@ -26,8 +34,12 @@ export default function Main() {
                   平均客単価
                 </NavDropdown.Item>
               </NavDropdown>
-              <Nav.Link>ユーザー</Nav.Link>
-              <Nav.Link>ログアウト</Nav.Link>
+              <AppLink to="/users">ユーザー</AppLink>
+            </Nav>
+            <Nav>
+              <form action="/logout" method="post">
+                <Button type="submit">ログアウト</Button>
+              </form>
             </Nav>
           </Navbar.Collapse>
         </Container>

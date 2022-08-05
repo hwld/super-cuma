@@ -1,16 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { db } from "~/db.server";
-
-export type Sale = {
-  customerName: string;
-  companyName: string;
-  address?: string;
-  productName: string;
-  purchaseData: Date;
-  amount: number;
-  unitPrice: number;
-  revenue: number;
-};
+import type { Sale } from ".";
 
 export const saleArgs = Prisma.validator<Prisma.SaleArgs>()({
   select: {

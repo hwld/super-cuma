@@ -2,7 +2,7 @@ import { Authenticator } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
 import { loginFormSchema } from "~/forms/loginForm";
 import type { User } from "~/models/user";
-import { login } from "~/models/user";
+import { login } from "~/models/user/finder.server";
 import { sessionStorage } from "./session.server";
 
 export const authenticator = new Authenticator<User>(sessionStorage, {

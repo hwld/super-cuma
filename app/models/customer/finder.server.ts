@@ -5,29 +5,9 @@ import type { CustomerForm } from "~/forms/customerForm";
 import type { CustomerSearchForm } from "~/forms/customerSearchForm";
 import { emptyToUndefined } from "~/utils/emptyToUndefined";
 import { nullsToUndefineds } from "~/utils/nullToUndefined";
-import type { Company } from "./company";
-import { companyArgs } from "./company";
-import type { Prefecture } from "./prefecture";
-import { prefectureArgs } from "./prefecture";
-
-export type Customer = {
-  id: number;
-  customerCd: string;
-  name: string;
-  kana: string;
-  gender: number;
-  zip?: string;
-  address1?: string;
-  address2?: string;
-  phone: string;
-  fax?: string;
-  email: string;
-  lasttrade?: Date;
-  created: Date;
-  modified: Date;
-  company: Company;
-  prefecture: Prefecture;
-};
+import type { Customer } from ".";
+import { companyArgs } from "../company/finder.server";
+import { prefectureArgs } from "../prefecture/finder.server";
 
 const customerArgs = Prisma.validator<Prisma.CustomerArgs>()({
   select: {

@@ -4,9 +4,9 @@ import { useLoaderData } from "@remix-run/react";
 import { validationError } from "remix-validated-form";
 import { CustomerForm } from "~/components/CustomerForm";
 import { customerValidator } from "~/forms/customerForm";
-import { findCompanies } from "~/models/company";
-import { createCustomer } from "~/models/customer";
-import { findPrefectures } from "~/models/prefecture";
+import { findCompanies } from "~/models/company/finder.server";
+import { createCustomer } from "~/models/customer/finder.server";
+import { findPrefectures } from "~/models/prefecture/finder.server";
 
 export const loader = async () => {
   const companies = await findCompanies();

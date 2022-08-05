@@ -1,7 +1,6 @@
 import { Button } from "react-bootstrap";
 import { ValidatedForm } from "remix-validated-form";
-import type { z } from "zod";
-import type { customerFormSchema } from "~/forms/customerForm";
+import type { CustomerForm as CustomerFormData } from "~/forms/customerForm";
 import { customerValidator } from "~/forms/customerForm";
 import type { Company } from "~/models/company";
 import type { Prefecture } from "~/models/prefecture";
@@ -14,7 +13,7 @@ import { HorizontalFormRow } from "./HorizontalFormRow";
 type Props = {
   companies: Company[];
   prefectures: Prefecture[];
-  defaultValues?: Partial<z.infer<typeof customerFormSchema>>;
+  defaultValues?: Partial<CustomerFormData>;
 };
 
 export const CustomerForm: React.VFC<Props> = ({
@@ -29,7 +28,6 @@ export const CustomerForm: React.VFC<Props> = ({
       validator={customerValidator}
       defaultValues={defaultValues}
       method="post"
-      className="mb-3"
     >
       <HorizontalFormRow
         label={

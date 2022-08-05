@@ -36,7 +36,7 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Login() {
-  const data = useActionData<typeof action>();
+  const actionData = useActionData<typeof action>();
 
   return (
     <div className="d-flex justify-content-center mt-5">
@@ -48,8 +48,8 @@ export default function Login() {
       >
         <Card.Header>ログイン</Card.Header>
         <Card.Body>
-          {data?.message && (
-            <div className="alert alert-danger">{data.message}</div>
+          {actionData?.message && (
+            <div className="alert alert-danger">{actionData.message}</div>
           )}
           <div className="mb-1">
             <FormLabel text="ユーザー名" />

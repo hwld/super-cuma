@@ -1,11 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { db } from "~/db.server";
-
-export type Company = {
-  id: number;
-  companyName: string;
-  companyKana: string;
-};
+import type { Company } from ".";
 
 export const companyArgs = Prisma.validator<Prisma.CompanyArgs>()({
   select: {

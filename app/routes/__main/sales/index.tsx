@@ -2,7 +2,7 @@ import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { Table } from "react-bootstrap";
-import { findSales } from "~/models/sale";
+import { findSales } from "~/models/sale/finder.server";
 
 export const loader = async (args: LoaderArgs) => {
   const sales = await findSales();

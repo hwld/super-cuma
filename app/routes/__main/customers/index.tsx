@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { Button, Table } from "react-bootstrap";
 import { Pagination } from "~/components/Pagination";
 import { SearchCustomerForm } from "~/components/SearchCustomerForm";
@@ -12,8 +12,11 @@ import { pagingFormSchema } from "~/forms/pagingForm";
 import { sortCustomerFormSchema } from "~/forms/sortCustomerForm";
 import { useSortCustomerState } from "~/libs/useSortCustomerState";
 import type { Customer } from "~/models/customer";
-import { buildCustomersWhere, findCustomers } from "~/models/customer";
-import { findPrefectures } from "~/models/prefecture";
+import {
+  buildCustomersWhere,
+  findCustomers,
+} from "~/models/customer/finder.server";
+import { findPrefectures } from "~/models/prefecture/finder.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
@@ -70,21 +73,9 @@ export const loader = async ({ request }: LoaderArgs) => {
   return json({ customers, prefectures, allPages });
 };
 
-export const action = async ({ request }: ActionArgs) => {
-  if (request.method === "DELETE") {
-    const formData = await request.formData();
-    const id = formData.get("customerId");
-    if (typeof id !== "string") {
-      throw new Error("フォームが正しく送信されませんでした。");
-    }
-
-    await db.customer.delete({ where: { id: parseInt(id) } });
-  }
-  return json(null);
-};
-
 export default function Index() {
   const { customers, prefectures, allPages } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
 
   const sortableHeaders: { field: keyof Customer; name: string }[] = [
     { field: "customerCd", name: "顧客コード" },
@@ -148,7 +139,8 @@ export default function Index() {
                     >
                       更新
                     </Link>
-                    <Form
+                    <fetcher.Form
+                      action={`delete/${customer.id}`}
                       method="delete"
                       onSubmit={(e) => {
                         const result = window.confirm(
@@ -167,7 +159,7 @@ export default function Index() {
                       <Button type="submit" className="btn btn-danger btn-sm">
                         削除
                       </Button>
-                    </Form>
+                    </fetcher.Form>
                   </div>
                 </td>
               </tr>
