@@ -105,6 +105,9 @@ export default function Index() {
       </div>
       {user.isAdmin && (
         <div className="text-end">
+          <Link to="importCsv" className="btn btn-primary me-1">
+            顧客のインポート
+          </Link>
           <Link to="add" className="btn btn-primary">
             新規登録
           </Link>
