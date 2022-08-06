@@ -35,7 +35,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   }
 
   // ページング
-  const limit = 3;
+  const limit = 10;
   let currentPage = 1;
 
   const pagingFormValidResult = pagingFormSchema.safeParse(searchParams);
@@ -105,8 +105,15 @@ export default function Index() {
       </div>
       {user.isAdmin && (
         <div className="text-end">
-          <Link to="importCsv" className="btn btn-primary me-1">
-            顧客のインポート
+          <Link to="importCsv" className="btn btn-secondary me-1">
+            インポート
+          </Link>
+          <Link
+            to="exportCsv"
+            className="btn btn-secondary me-1"
+            reloadDocument
+          >
+            エクスポート
           </Link>
           <Link to="add" className="btn btn-primary">
             新規登録
