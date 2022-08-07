@@ -26,7 +26,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const userForm: UserFormData = {
     username: user.username,
     password: "",
-    isAdmin: user.isAdmin ? "true" : undefined,
+    isAdmin: user.isAdmin,
   };
   return json({ userForm, loggedInUser });
 };

@@ -46,7 +46,7 @@ export const createUser = async ({
     data: {
       username,
       password: hashedPassword,
-      isAdmin: isAdmin === "true" ? true : false,
+      isAdmin,
     },
   });
   return { type: "success" };
@@ -66,7 +66,7 @@ export const editUser = async (
     data: {
       username,
       password: hashedPassword,
-      isAdmin: isAdmin === "true" ? true : undefined,
+      isAdmin,
     },
     where: { id },
   });

@@ -46,7 +46,14 @@ export const UserForm: React.VFC<Props> = ({
       />
       {adminLoggedIn && (
         <HorizontalFormRow
-          input={<FormCheckbox label="管理者" name="isAdmin" value="true" />}
+          input={
+            <FormCheckbox
+              label="管理者"
+              name="isAdmin"
+              value="true"
+              offValue="false"
+            />
+          }
         />
       )}
 
