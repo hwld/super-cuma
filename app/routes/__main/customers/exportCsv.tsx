@@ -1,8 +1,12 @@
+import type { LoaderArgs } from "@remix-run/node";
 import { Response } from "@remix-run/node";
 import { stringify } from "csv";
 import { findCustomers } from "~/models/customer/finder.server";
+import { authenticator } from "~/services/auth.server";
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderArgs) => {
+  await authenticator.isAuthenticated(request, { failureRedirect: "/login" });
+
   const customers = await findCustomers();
 
   const stream = stringify(

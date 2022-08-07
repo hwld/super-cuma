@@ -1,6 +1,6 @@
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { Table } from "react-bootstrap";
 import { findSales } from "~/models/sale/finder.server";
 
@@ -16,7 +16,17 @@ export default function SalesHome() {
   const { sales } = useLoaderData<typeof loader>();
   return (
     <>
-      <h3>売上</h3>
+      <h3>売上一覧</h3>
+      <div className="mt-3">
+        <Link
+          to="pdf"
+          className="py-1 btn btn-primary"
+          reloadDocument
+          target="_blank"
+        >
+          帳票出力
+        </Link>
+      </div>
       <Table>
         <thead>
           <tr>
