@@ -1,4 +1,3 @@
-import type { Prisma } from "@prisma/client";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
@@ -6,74 +5,23 @@ import { Button, Table } from "react-bootstrap";
 import { Pagination } from "~/components/Pagination";
 import { SearchCustomerForm } from "~/components/SearchCustomerForm";
 import { SortableTh } from "~/components/SortableTh";
-import { db } from "~/db.server";
-import { customerSearchFormSchema } from "~/forms/customerSearchForm";
-import { pagingFormSchema } from "~/forms/pagingForm";
-import { sortCustomerFormSchema } from "~/forms/sortCustomerForm";
 import { useSortCustomerState } from "~/libs/useSortCustomerState";
 import type { Customer } from "~/models/customer";
-import {
-  buildCustomersWhere,
-  findCustomers,
-} from "~/models/customer/finder.server";
+import { findCustomersByRequest } from "~/models/customer/finder.server";
 import { findPrefectures } from "~/models/prefecture/finder.server";
-import { authenticator } from "~/services/auth.server";
+import { buildCustomersRequest } from "~/requests/buildCustomersRequest.server";
+import { requireAuthentication } from "~/services/auth.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const user = await authenticator.isAuthenticated(request, {
-    failureRedirect: "/login",
-  });
+  const user = await requireAuthentication(request);
 
-  // 検索
-  const url = new URL(request.url);
-  const searchParams = Object.fromEntries(url.searchParams.entries());
-  const validResult = customerSearchFormSchema.safeParse(searchParams);
+  const customersRequest = buildCustomersRequest(request);
 
-  let findCustomersWhere: Prisma.CustomerWhereInput | undefined = undefined;
-  if (validResult.success) {
-    findCustomersWhere = buildCustomersWhere(validResult.data);
-  }
+  const { customers, allPages } = await findCustomersByRequest(
+    customersRequest
+  );
 
-  // ページング
-  const limit = 10;
-  let currentPage = 1;
-
-  const pagingFormValidResult = pagingFormSchema.safeParse(searchParams);
-  if (pagingFormValidResult.success) {
-    const page = Number(pagingFormValidResult.data.page);
-    if (!isNaN(page)) {
-      currentPage = page;
-    }
-  }
-
-  // ソート
-  let orderBy:
-    | Prisma.Enumerable<Prisma.CustomerOrderByWithRelationInput>
-    | undefined = undefined;
-  const sortFormValidResult = sortCustomerFormSchema.safeParse(searchParams);
-  if (sortFormValidResult.success) {
-    const sortData = sortFormValidResult.data;
-    if (sortData.orderBy === "company") {
-      orderBy = { company: { companyName: sortData.order } };
-    } else if (sortData.orderBy === "prefecture") {
-      orderBy = { prefecture: { prefName: sortData.order } };
-    } else {
-      orderBy = { [sortData.orderBy]: sortData.order };
-    }
-  }
-
-  const customers = await findCustomers({
-    where: findCustomersWhere,
-    skip: (currentPage - 1) * limit,
-    take: limit,
-    orderBy,
-  });
   const prefectures = await findPrefectures();
-
-  const allCustomersCount = await db.customer.count({
-    where: findCustomersWhere,
-  });
-  const allPages = Math.ceil(allCustomersCount / limit);
 
   return json({ customers, prefectures, allPages, user });
 };

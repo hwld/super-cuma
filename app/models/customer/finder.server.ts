@@ -3,6 +3,8 @@ import { format } from "date-fns";
 import { db } from "~/db.server";
 import type { CustomerForm } from "~/forms/customerForm";
 import type { CustomerSearchForm } from "~/forms/customerSearchForm";
+import type { SortCustomerForm } from "~/forms/sortCustomerForm";
+import type { CustomersRequest } from "~/requests/buildCustomersRequest.server";
 import { emptyToUndefined } from "~/utils/emptyToUndefined";
 import { nullsToUndefineds } from "~/utils/nullToUndefined";
 import type { Customer } from ".";
@@ -171,4 +173,49 @@ export const buildCustomersWhere = (
         : undefined,
     },
   };
+};
+
+export const buildCustomersOrderBy = (
+  sortForm: SortCustomerForm
+): Prisma.CustomerFindManyArgs["orderBy"] => {
+  const { orderBy, order } = sortForm;
+  if (orderBy === "company") {
+    return { company: { companyName: order } };
+  } else if (orderBy === "prefecture") {
+    return { prefecture: { prefName: order } };
+  } else {
+    return { [orderBy]: order };
+  }
+};
+
+export const findCustomersByRequest = async (
+  request: CustomersRequest
+): Promise<{ customers: Customer[]; allPages: number }> => {
+  const { searchForm, pagingForm, sortForm } = request;
+
+  // 検索
+  const findCustomersWhere = searchForm
+    ? buildCustomersWhere(searchForm)
+    : undefined;
+
+  // ページング
+  const limit = 10;
+  const currentPage = pagingForm ? pagingForm.page : 1;
+
+  // ソート
+  let orderByInput = sortForm ? buildCustomersOrderBy(sortForm) : undefined;
+
+  const customers = await findCustomers({
+    where: findCustomersWhere,
+    skip: (currentPage - 1) * limit,
+    take: limit,
+    orderBy: orderByInput,
+  });
+
+  const allCustomersCount = await db.customer.count({
+    where: findCustomersWhere,
+  });
+  const allPages = Math.ceil(allCustomersCount / limit);
+
+  return { customers, allPages };
 };

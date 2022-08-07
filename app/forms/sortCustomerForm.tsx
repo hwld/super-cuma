@@ -12,3 +12,5 @@ export const sortCustomerFormSchema = z.object({
   ]),
   order: z.union([z.literal("asc"), z.literal("desc")]),
 });
+
+export type SortCustomerForm = z.infer<typeof sortCustomerFormSchema>;
