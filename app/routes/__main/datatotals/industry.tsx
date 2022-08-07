@@ -2,13 +2,14 @@ import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { Table } from "react-bootstrap";
+import { IndustryPieChart } from "~/components/IndustryPieChart";
 import { db } from "~/db.server";
 
 type RawCustomersByIndustry = {
   businessCategoryName: string;
   customerCount: BigInt;
 };
-type CustomersByIndustry = {
+export type CustomersByIndustry = {
   businessCategoryName: string;
   customerCount: number;
 };
@@ -29,22 +30,25 @@ export const loader = async (args: LoaderArgs) => {
   ORDER BY
     customerCount DESC
   `) as RawCustomersByIndustry[];
-  const customersByIndustry: CustomersByIndustry[] = raw.map((result) => {
+  const customersByIndustries: CustomersByIndustry[] = raw.map((result) => {
     return {
       businessCategoryName: result.businessCategoryName,
       customerCount: Number(result.customerCount),
     };
   });
 
-  return json({ customersByIndustry });
+  return json({ customersByIndustries });
 };
 
 export default function Industry() {
-  const { customersByIndustry } = useLoaderData<typeof loader>();
+  const { customersByIndustries } = useLoaderData<typeof loader>();
 
   return (
     <div>
       <h3>業種ごとの顧客数</h3>
+      <div className="mt-3">
+        <IndustryPieChart customersByIndustries={customersByIndustries} />
+      </div>
       <Table>
         <thead>
           <tr>
@@ -53,7 +57,7 @@ export default function Industry() {
           </tr>
         </thead>
         <tbody>
-          {customersByIndustry.map((d, i) => {
+          {customersByIndustries.map((d, i) => {
             return (
               <tr key={i}>
                 <td>{d.businessCategoryName}</td>
