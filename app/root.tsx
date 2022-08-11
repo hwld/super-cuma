@@ -1,4 +1,4 @@
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -13,13 +13,6 @@ export const meta: MetaFunction = () => ({
   title: "New Remix App",
   viewport: "width=device-width,initial-scale=1",
 });
-
-export const links: LinksFunction = () => [
-  {
-    rel: "stylesheet",
-    href: "https://unpkg.com/bootstrap@5.2.0/dist/css/bootstrap.min.css",
-  },
-];
 
 export default function App() {
   return (
