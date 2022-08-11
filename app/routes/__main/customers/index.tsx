@@ -87,7 +87,7 @@ export default function Index() {
         </Stack>
       )}
       <TableContainer component={Paper}>
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
               {sortableHeaders.map(({ field, name }) => {
@@ -163,7 +163,14 @@ export default function Index() {
           </TableBody>
         </Table>
       </TableContainer>
-      <Pagination allPages={allPages} />
+      <Box
+        marginTop={1}
+        textAlign={"center"}
+        display={"flex"}
+        justifyContent={"center"}
+      >
+        <Pagination allPages={allPages} />
+      </Box>
     </div>
   );
 }

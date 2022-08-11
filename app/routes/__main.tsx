@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
@@ -12,11 +12,11 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function Main() {
   return (
-    <div>
+    <Box marginBottom={5}>
       <AppHeader maxWidth="xl" />
       <Container maxWidth="xl">
         <Outlet />
       </Container>
-    </div>
+    </Box>
   );
 }
