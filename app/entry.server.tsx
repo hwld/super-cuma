@@ -1,3 +1,4 @@
+import { CssBaseline } from "@mui/material";
 import type { EntryContext } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { renderToString } from "react-dom/server";
@@ -9,7 +10,10 @@ export default function handleRequest(
   remixContext: EntryContext
 ) {
   let markup = renderToString(
-    <RemixServer context={remixContext} url={request.url} />
+    <>
+      <CssBaseline />
+      <RemixServer context={remixContext} url={request.url} />
+    </>
   );
 
   responseHeaders.set("Content-Type", "text/html");

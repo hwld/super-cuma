@@ -27,7 +27,7 @@ export const AppHeader: React.VFC<Props> = ({ maxWidth }) => {
   };
 
   return (
-    <AppBar>
+    <AppBar position="static">
       <Container maxWidth={maxWidth}>
         <Toolbar>
           <Typography

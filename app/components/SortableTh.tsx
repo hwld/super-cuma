@@ -1,3 +1,4 @@
+import { Stack, TableCell } from "@mui/material";
 import { useMemo } from "react";
 import { HiChevronDown, HiChevronUp, HiSelector } from "react-icons/hi";
 import type { CustomerTableSortState } from "~/libs/useSortCustomerState";
@@ -39,11 +40,11 @@ export const SortableTh: React.VFC<Props> = ({
   }, [field, sortState.orderBy, sortState.order]);
 
   return (
-    <th style={{ cursor: "pointer" }} onClick={handleClick}>
-      <div className="d-flex justify-content-between align-items-center">
-        <div className="text-nowrap user-select-none">{children}</div>
+    <TableCell onClick={handleClick} sx={{ cursor: "pointer" }}>
+      <Stack direction="row" alignItems="center" gap={1}>
+        {children}
         {icon}
-      </div>
-    </th>
+      </Stack>
+    </TableCell>
   );
 };

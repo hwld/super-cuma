@@ -1,7 +1,19 @@
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { Button, Table } from "react-bootstrap";
 import { Pagination } from "~/components/Pagination";
 import { SearchCustomerForm } from "~/components/SearchCustomerForm";
 import { SortableTh } from "~/components/SortableTh";
@@ -47,94 +59,110 @@ export default function Index() {
 
   return (
     <div>
-      <h3 className="mb-3">顧客一覧</h3>
-      <div className="mb-3">
+      <Typography marginTop={1}>顧客一覧</Typography>
+      <Box marginBottom={1}>
         <SearchCustomerForm prefectures={prefectures} method="get" />
-      </div>
+      </Box>
       {user.isAdmin && (
-        <div className="text-end">
-          <Link to="importCsv" className="btn btn-secondary me-1">
+        <Stack
+          direction="row"
+          justifyContent="flex-end"
+          gap={1}
+          marginBottom={1}
+        >
+          <Button variant="contained" component={Link} to="importCsv">
             インポート
-          </Link>
-          <Link
+          </Button>
+          <Button
+            variant="contained"
+            component={Link}
             to="exportCsv"
-            className="btn btn-secondary me-1"
             reloadDocument
           >
             エクスポート
-          </Link>
-          <Link to="add" className="btn btn-primary">
+          </Button>
+          <Button variant="contained" component={Link} to="add">
             新規登録
-          </Link>
-        </div>
+          </Button>
+        </Stack>
       )}
-      <Table>
-        <thead>
-          <tr>
-            {sortableHeaders.map(({ field, name }) => {
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {sortableHeaders.map(({ field, name }) => {
+                return (
+                  <SortableTh
+                    key={field}
+                    field={field}
+                    sortState={sortState}
+                    setSortState={setSearchParam}
+                  >
+                    {name}
+                  </SortableTh>
+                );
+              })}
+              {user.isAdmin && <TableCell>更新・削除</TableCell>}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {customers.map((customer) => {
               return (
-                <SortableTh
-                  key={field}
-                  field={field}
-                  sortState={sortState}
-                  setSortState={setSearchParam}
-                >
-                  {name}
-                </SortableTh>
+                <TableRow key={customer.id}>
+                  <TableCell>{customer.customerCd}</TableCell>
+                  <TableCell>{customer.name}</TableCell>
+                  <TableCell>{customer.kana}</TableCell>
+                  <TableCell>{customer.company.companyName}</TableCell>
+                  <TableCell>{customer.prefecture.prefName}</TableCell>
+                  <TableCell>{customer.phone}</TableCell>
+                  <TableCell>{customer.email}</TableCell>
+                  {user.isAdmin && (
+                    <TableCell>
+                      <Stack gap={1} alignItems="center">
+                        <Button
+                          variant="contained"
+                          component={Link}
+                          to={`/customers/edit/${customer.id}`}
+                          size="small"
+                        >
+                          更新
+                        </Button>
+                        <Box>
+                          <fetcher.Form
+                            action={`delete/${customer.id}`}
+                            method="delete"
+                            onSubmit={(e) => {
+                              const result = window.confirm(
+                                `顧客名: ${customer.name} を削除しても良いですか?`
+                              );
+                              if (!result) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            <input
+                              hidden
+                              name="customerId"
+                              defaultValue={customer.id}
+                            />
+                            <Button
+                              type="submit"
+                              variant="contained"
+                              size="small"
+                            >
+                              削除
+                            </Button>
+                          </fetcher.Form>
+                        </Box>
+                      </Stack>
+                    </TableCell>
+                  )}
+                </TableRow>
               );
             })}
-            {user.isAdmin && <th className="user-select-none">更新・削除</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {customers.map((customer) => {
-            return (
-              <tr key={customer.id}>
-                <td>{customer.customerCd}</td>
-                <td>{customer.name}</td>
-                <td>{customer.kana}</td>
-                <td>{customer.company.companyName}</td>
-                <td>{customer.prefecture.prefName}</td>
-                <td>{customer.phone}</td>
-                <td>{customer.email}</td>
-                {user.isAdmin && (
-                  <td>
-                    <div className="d-flex gap-1">
-                      <Link
-                        to={`/customers/edit/${customer.id}`}
-                        className="btn btn-success btn-sm"
-                      >
-                        更新
-                      </Link>
-                      <fetcher.Form
-                        action={`delete/${customer.id}`}
-                        method="delete"
-                        onSubmit={(e) => {
-                          const result = window.confirm(
-                            `顧客名: ${customer.name} を削除しても良いですか?`
-                          );
-                          if (!result) {
-                            e.preventDefault();
-                          }
-                        }}
-                      >
-                        <input
-                          hidden
-                          name="customerId"
-                          defaultValue={customer.id}
-                        />
-                        <Button type="submit" className="btn btn-danger btn-sm">
-                          削除
-                        </Button>
-                      </fetcher.Form>
-                    </div>
-                  </td>
-                )}
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+          </TableBody>
+        </Table>
+      </TableContainer>
       <Pagination allPages={allPages} />
     </div>
   );
