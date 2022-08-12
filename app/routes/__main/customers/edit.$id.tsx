@@ -1,3 +1,4 @@
+import { Box, Typography } from "@mui/material";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -50,12 +51,14 @@ export default function EditCustomer() {
 
   return (
     <div>
-      <h3>顧客編集</h3>
-      <CustomerForm
-        companies={companies}
-        prefectures={prefectures}
-        defaultValues={customerForm}
-      />
+      <Typography variant="h5">顧客編集</Typography>
+      <Box marginTop={3}>
+        <CustomerForm
+          companies={companies}
+          prefectures={prefectures}
+          defaultValues={customerForm}
+        />
+      </Box>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { Box, Typography } from "@mui/material";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -36,11 +37,13 @@ export default function Add() {
 
   return (
     <div>
-      <h3 className="mb-4">顧客登録</h3>
-      <CustomerForm
-        companies={loaderData?.companies ?? []}
-        prefectures={loaderData?.prefectures ?? []}
-      />
+      <Typography variant="h5">顧客登録</Typography>
+      <Box marginTop={3}>
+        <CustomerForm
+          companies={loaderData?.companies ?? []}
+          prefectures={loaderData?.prefectures ?? []}
+        />
+      </Box>
     </div>
   );
 }

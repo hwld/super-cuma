@@ -102,6 +102,7 @@ export const SearchCustomerForm: React.VFC<Props> = ({
                       label: pref.prefName,
                       value: pref.id.toString(),
                     }))}
+                    allowEmpty
                   />
                 </Stack>
                 <Stack gap={1}>

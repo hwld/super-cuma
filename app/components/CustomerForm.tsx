@@ -1,11 +1,11 @@
-import { Button } from "react-bootstrap";
+import { Box, Button, FormLabel } from "@mui/material";
 import { ValidatedForm } from "remix-validated-form";
 import type { CustomerForm as CustomerFormData } from "~/forms/customerForm";
 import { customerValidator } from "~/forms/customerForm";
 import type { Company } from "~/models/company";
 import type { Prefecture } from "~/models/prefecture";
+import { FormAutoComplete } from "./FormAutoComplete";
 import { FormInput } from "./FormInput";
-import { FormLabel } from "./FormLabel";
 import { FormRadio } from "./FormRadio";
 import { FormSelect } from "./FormSelect";
 import { HorizontalFormRow } from "./HorizontalFormRow";
@@ -31,26 +31,36 @@ export const CustomerForm: React.VFC<Props> = ({
     >
       <HorizontalFormRow
         label={
-          <FormLabel
-            text="顧客コード"
-            required
-            htmlFor={buildId("customerCd")}
+          <FormLabel htmlFor={buildId("customerCd")} required>
+            顧客コード
+          </FormLabel>
+        }
+        input={
+          <FormInput
+            size="small"
+            id={buildId("customerCd")}
+            name="customerCd"
           />
         }
-        input={<FormInput id={buildId("customerCd")} name="customerCd" />}
-      />
-      <HorizontalFormRow
-        label={<FormLabel text="顧客名" required htmlFor={buildId("name")} />}
-        input={<FormInput id={buildId("name")} name="name" />}
       />
       <HorizontalFormRow
         label={
-          <FormLabel text="顧客名(カナ)" required htmlFor={buildId("kana")} />
+          <FormLabel required htmlFor={buildId("name")}>
+            顧客名
+          </FormLabel>
         }
-        input={<FormInput id={buildId("kana")} name="kana" />}
+        input={<FormInput size="small" id={buildId("name")} name="name" />}
       />
       <HorizontalFormRow
-        label={<FormLabel text="性別" required />}
+        label={
+          <FormLabel required htmlFor={buildId("kana")}>
+            顧客名(カナ)
+          </FormLabel>
+        }
+        input={<FormInput size="small" id={buildId("kana")} name="kana" />}
+      />
+      <HorizontalFormRow
+        label={<FormLabel required>性別</FormLabel>}
         input={
           <FormRadio
             name="gender"
@@ -63,10 +73,13 @@ export const CustomerForm: React.VFC<Props> = ({
       />
       <HorizontalFormRow
         label={
-          <FormLabel text="会社名" required htmlFor={buildId("companyId")} />
+          <FormLabel required htmlFor={buildId("companyId")}>
+            会社名
+          </FormLabel>
         }
         input={
           <FormSelect
+            size="small"
             id={buildId("companyId")}
             name="companyId"
             items={companies.map((company) => ({
@@ -77,67 +90,74 @@ export const CustomerForm: React.VFC<Props> = ({
         }
       />
       <HorizontalFormRow
-        label={<FormLabel text="郵便番号" htmlFor={buildId("zip")} />}
-        input={<FormInput id={buildId("zip")} name="zip" />}
+        label={<FormLabel htmlFor={buildId("zip")}>郵便番号</FormLabel>}
+        input={<FormInput size="small" id={buildId("zip")} name="zip" />}
       />
       <HorizontalFormRow
         label={
-          <FormLabel
-            text="都道府県"
-            htmlFor={buildId("prefectureId")}
-            required
-          />
+          <FormLabel htmlFor={buildId("prefectureId")} required>
+            都道府県
+          </FormLabel>
         }
         input={
-          <FormSelect
-            id={buildId("prefectureId")}
+          <FormAutoComplete
             name="prefectureId"
+            size="small"
             items={prefectures.map((pref) => ({
               label: pref.prefName,
-              value: pref.id,
+              value: pref.id.toString(),
             }))}
           />
         }
       />
       <HorizontalFormRow
-        label={<FormLabel text="住所1" htmlFor={buildId("address1")} />}
-        input={<FormInput id={buildId("address1")} name="address1" />}
-      />
-      <HorizontalFormRow
-        label={<FormLabel text="住所2" htmlFor={buildId("address2")} />}
-        input={<FormInput id={buildId("address2")} name="address2" />}
-      />
-      <HorizontalFormRow
-        label={
-          <FormLabel text="電話番号" required htmlFor={buildId("phone")} />
+        label={<FormLabel htmlFor={buildId("address1")}>住所1</FormLabel>}
+        input={
+          <FormInput size="small" id={buildId("address1")} name="address1" />
         }
-        input={<FormInput id={buildId("phone")} name="phone" />}
       />
       <HorizontalFormRow
-        label={<FormLabel text="FAX" htmlFor={buildId("fax")} />}
-        input={<FormInput id={buildId("fax")} name="fax" />}
+        label={<FormLabel htmlFor={buildId("address2")}>住所2</FormLabel>}
+        input={
+          <FormInput size="small" id={buildId("address2")} name="address2" />
+        }
       />
       <HorizontalFormRow
         label={
-          <FormLabel
-            text="メールアドレス"
-            htmlFor={buildId("email")}
-            required
+          <FormLabel required htmlFor={buildId("phone")}>
+            電話番号
+          </FormLabel>
+        }
+        input={<FormInput size="small" id={buildId("phone")} name="phone" />}
+      />
+      <HorizontalFormRow
+        label={<FormLabel htmlFor={buildId("fax")}>FAX</FormLabel>}
+        input={<FormInput size="small" id={buildId("fax")} name="fax" />}
+      />
+      <HorizontalFormRow
+        label={
+          <FormLabel htmlFor={buildId("email")} required>
+            メールアドレス
+          </FormLabel>
+        }
+        input={<FormInput size="small" id={buildId("email")} name="email" />}
+      />
+      <HorizontalFormRow
+        label={<FormLabel htmlFor={buildId("lasttrade")}>最終取引日</FormLabel>}
+        input={
+          <FormInput
+            size="small"
+            id={buildId("lasttrade")}
+            name="lasttrade"
+            type="date"
           />
         }
-        input={<FormInput id={buildId("email")} name="email" />}
       />
-      <HorizontalFormRow
-        label={<FormLabel text="最終取引日" htmlFor={buildId("lasttrade")} />}
-        input={
-          <FormInput id={buildId("lasttrade")} name="lasttrade" type="date" />
-        }
-      />
-      <div className="text-end">
-        <Button type="submit">
+      <Box textAlign="end">
+        <Button type="submit" variant="contained">
           {defaultValues === undefined ? "登録" : "更新"}
         </Button>
-      </div>
+      </Box>
     </ValidatedForm>
   );
 };

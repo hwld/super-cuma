@@ -1,11 +1,22 @@
+import { Grid } from "@mui/material";
+
 export const HorizontalFormRow: React.VFC<{
   label?: React.ReactNode;
   input?: React.ReactNode;
 }> = ({ label, input }) => {
   return (
-    <div className="row mb-3">
-      <label className="col-sm-2">{label}</label>
-      <div className="col-sm-10">{input}</div>
-    </div>
+    <Grid
+      container
+      spacing={{ xs: 0, md: 2 }}
+      marginBottom={2}
+      alignItems="center"
+    >
+      <Grid item xs={12} md={2} textAlign={{ xs: "start", md: "end" }}>
+        {label}
+      </Grid>
+      <Grid item xs={12} md={10}>
+        {input}
+      </Grid>
+    </Grid>
   );
 };

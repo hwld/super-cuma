@@ -1,3 +1,4 @@
+import { MenuItem, Select } from "@mui/material";
 import { useField } from "remix-validated-form";
 import { FormErrorMessage } from "./FormErrorMessage";
 
@@ -5,19 +6,33 @@ type Props = {
   id: string;
   name: string;
   items: { label: string; value: string | number | undefined }[];
-  size?: "sm" | "md";
+  size?: "small" | "medium";
 };
 export const FormSelect: React.VFC<Props> = ({
   id,
   name,
   items,
-  size = "md",
+  size = "medium",
 }) => {
-  const { getInputProps, error } = useField(name);
+  const { getInputProps, error, defaultValue } = useField(name);
 
   return (
     <div>
-      <select
+      <Select
+        size={size}
+        fullWidth
+        {...getInputProps()}
+        defaultValue={defaultValue ?? items[0].value}
+      >
+        {items.map((item, i) => {
+          return (
+            <MenuItem key={i} value={item.value}>
+              {item.label}
+            </MenuItem>
+          );
+        })}
+      </Select>
+      {/* <select
         className={`form-select ${error ? "is-invalid" : ""} ${
           size === "sm" ? "form-select-sm" : ""
         }`}
@@ -30,7 +45,7 @@ export const FormSelect: React.VFC<Props> = ({
             </option>
           );
         })}
-      </select>
+      </select> */}
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </div>
   );

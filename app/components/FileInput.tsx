@@ -1,7 +1,8 @@
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Stack, TextField } from "@mui/material";
 import type { ComponentPropsWithoutRef } from "react";
 import { useRef, useState } from "react";
 import { useField } from "remix-validated-form";
+import { FormErrorMessage } from "./FormErrorMessage";
 type Props = {
   name: string;
   accept?: ComponentPropsWithoutRef<"input">["accept"];
@@ -49,11 +50,7 @@ export const FileInput: React.VFC<Props> = ({ name, accept, id }) => {
         ref={fileInputRef}
         onChange={handleChangeFile}
       />
-      {error && (
-        <Typography color="error" fontSize={16} marginLeft={1} marginTop={1}>
-          {error}
-        </Typography>
-      )}
+      {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </div>
   );
 };

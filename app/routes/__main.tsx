@@ -13,8 +13,8 @@ export const loader = async ({ request }: LoaderArgs) => {
 export default function Main() {
   return (
     <Box marginBottom={5}>
-      <AppHeader maxWidth="xl" />
-      <Container maxWidth="xl">
+      <AppHeader maxWidth="lg" />
+      <Container maxWidth="lg">
         <Box paddingTop={3}>
           <Outlet />
         </Box>
