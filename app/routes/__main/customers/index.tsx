@@ -59,17 +59,14 @@ export default function Index() {
 
   return (
     <div>
-      <Typography marginTop={1}>顧客一覧</Typography>
-      <Box marginBottom={1}>
+      <Typography marginTop={3} variant="h5">
+        顧客一覧
+      </Typography>
+      <Box marginTop={3}>
         <SearchCustomerForm prefectures={prefectures} method="get" />
       </Box>
       {user.isAdmin && (
-        <Stack
-          direction="row"
-          justifyContent="flex-end"
-          gap={1}
-          marginBottom={1}
-        >
+        <Stack direction="row" justifyContent="flex-end" gap={1} marginTop={3}>
           <Button variant="contained" component={Link} to="importCsv">
             インポート
           </Button>
@@ -86,83 +83,85 @@ export default function Index() {
           </Button>
         </Stack>
       )}
-      <TableContainer component={Paper}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              {sortableHeaders.map(({ field, name }) => {
+      <Box marginTop={2}>
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                {sortableHeaders.map(({ field, name }) => {
+                  return (
+                    <SortableTh
+                      key={field}
+                      field={field}
+                      sortState={sortState}
+                      setSortState={setSearchParam}
+                    >
+                      {name}
+                    </SortableTh>
+                  );
+                })}
+                {user.isAdmin && <TableCell>更新・削除</TableCell>}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {customers.map((customer) => {
                 return (
-                  <SortableTh
-                    key={field}
-                    field={field}
-                    sortState={sortState}
-                    setSortState={setSearchParam}
-                  >
-                    {name}
-                  </SortableTh>
+                  <TableRow key={customer.id}>
+                    <TableCell>{customer.customerCd}</TableCell>
+                    <TableCell>{customer.name}</TableCell>
+                    <TableCell>{customer.kana}</TableCell>
+                    <TableCell>{customer.company.companyName}</TableCell>
+                    <TableCell>{customer.prefecture.prefName}</TableCell>
+                    <TableCell>{customer.phone}</TableCell>
+                    <TableCell>{customer.email}</TableCell>
+                    {user.isAdmin && (
+                      <TableCell>
+                        <Stack direction="row" gap={1} alignItems="center">
+                          <Button
+                            variant="contained"
+                            component={Link}
+                            to={`/customers/edit/${customer.id}`}
+                            size="small"
+                          >
+                            更新
+                          </Button>
+                          <Box>
+                            <fetcher.Form
+                              action={`delete/${customer.id}`}
+                              method="delete"
+                              onSubmit={(e) => {
+                                const result = window.confirm(
+                                  `顧客名: ${customer.name} を削除しても良いですか?`
+                                );
+                                if (!result) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
+                              <input
+                                hidden
+                                name="customerId"
+                                defaultValue={customer.id}
+                              />
+                              <Button
+                                type="submit"
+                                variant="contained"
+                                size="small"
+                              >
+                                削除
+                              </Button>
+                            </fetcher.Form>
+                          </Box>
+                        </Stack>
+                      </TableCell>
+                    )}
+                  </TableRow>
                 );
               })}
-              {user.isAdmin && <TableCell>更新・削除</TableCell>}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {customers.map((customer) => {
-              return (
-                <TableRow key={customer.id}>
-                  <TableCell>{customer.customerCd}</TableCell>
-                  <TableCell>{customer.name}</TableCell>
-                  <TableCell>{customer.kana}</TableCell>
-                  <TableCell>{customer.company.companyName}</TableCell>
-                  <TableCell>{customer.prefecture.prefName}</TableCell>
-                  <TableCell>{customer.phone}</TableCell>
-                  <TableCell>{customer.email}</TableCell>
-                  {user.isAdmin && (
-                    <TableCell>
-                      <Stack gap={1} alignItems="center">
-                        <Button
-                          variant="contained"
-                          component={Link}
-                          to={`/customers/edit/${customer.id}`}
-                          size="small"
-                        >
-                          更新
-                        </Button>
-                        <Box>
-                          <fetcher.Form
-                            action={`delete/${customer.id}`}
-                            method="delete"
-                            onSubmit={(e) => {
-                              const result = window.confirm(
-                                `顧客名: ${customer.name} を削除しても良いですか?`
-                              );
-                              if (!result) {
-                                e.preventDefault();
-                              }
-                            }}
-                          >
-                            <input
-                              hidden
-                              name="customerId"
-                              defaultValue={customer.id}
-                            />
-                            <Button
-                              type="submit"
-                              variant="contained"
-                              size="small"
-                            >
-                              削除
-                            </Button>
-                          </fetcher.Form>
-                        </Box>
-                      </Stack>
-                    </TableCell>
-                  )}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
       <Box
         marginTop={1}
         textAlign={"center"}

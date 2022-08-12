@@ -1,28 +1,33 @@
-import type { ComponentPropsWithoutRef } from "react";
+import type { TextFieldProps } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useField } from "remix-validated-form";
-import { FormErrorMessage } from "./FormErrorMessage";
 
 type Props = {
   name: string;
+  type?: TextFieldProps["type"];
   id?: string;
-  size?: "md" | "sm";
-} & Omit<ComponentPropsWithoutRef<"input">, "size">;
+  label?: string;
+  size?: TextFieldProps["size"];
+  fullWidth?: boolean;
+};
 export const FormInput: React.VFC<Props> = ({
   name,
   id,
-  size = "md",
-  ...inputProps
+  label,
+  size,
+  type,
+  fullWidth,
 }) => {
   const { getInputProps, error } = useField(name);
   return (
-    <div>
-      <input
-        className={`form-control ${error ? "is-invalid" : ""} ${
-          size === "sm" ? "form-control-sm" : ""
-        }`}
-        {...getInputProps({ id, ...inputProps })}
-      />
-      {error && <FormErrorMessage>{error}</FormErrorMessage>}
-    </div>
+    <TextField
+      label={label}
+      size={size}
+      type={type}
+      error={error !== undefined}
+      helperText={error}
+      fullWidth
+      {...getInputProps({ id })}
+    />
   );
 };

@@ -1,16 +1,24 @@
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  FormLabel,
+  Grid,
+  Stack,
+} from "@mui/material";
 import type { FormMethod } from "@remix-run/react";
 import { Link, useSearchParams } from "@remix-run/react";
 import { useMemo } from "react";
-import { Button, Card } from "react-bootstrap";
 import { ValidatedForm } from "remix-validated-form";
 import {
   customerSearchFormSchema,
   customerSearchValidator,
 } from "~/forms/customerSearchForm";
 import type { Prefecture } from "~/models/prefecture";
+import { FormAutoComplete } from "./FormAutoComplete";
 import { FormInput } from "./FormInput";
-import { FormLabel } from "./FormLabel";
-import { FormSelect } from "./FormSelect";
 
 const formFields = Object.keys(customerSearchFormSchema.shape);
 
@@ -19,7 +27,7 @@ export const SearchCustomerForm: React.VFC<Props> = ({
   prefectures,
   method,
 }) => {
-  const buildId = (id: string) => `searchCustomerForm-${id}`;
+  const formId = "search-customer-form";
 
   const [searchParams] = useSearchParams();
 
@@ -34,93 +42,127 @@ export const SearchCustomerForm: React.VFC<Props> = ({
 
   return (
     <Card>
-      <Card.Body>
-        <Card.Title>顧客検索</Card.Title>
+      <CardHeader title="顧客検索" />
+      <CardContent>
         <ValidatedForm
-          id="search-customer-form"
+          id={formId}
           validator={customerSearchValidator}
           method={method}
           defaultValues={Object.fromEntries(searchParams.entries())}
         >
-          <div className="row">
-            <div className="col">
-              <div>
-                <FormLabel text="顧客コード" htmlFor={buildId("customerCd")} />
-                <FormInput
-                  id={buildId("customerCd")}
-                  name="customerCd"
-                  size="sm"
-                />
-              </div>
-              <div>
-                <FormLabel text="顧客名" htmlFor={buildId("name")} />
-                <FormInput id={buildId("name")} name="name" size="sm" />
-              </div>
-              <div>
-                <FormLabel text="顧客名(カナ)" htmlFor={buildId("kana")} />
-                <FormInput id={buildId("kana")} name="kana" size="sm" />
-              </div>
-              <div>
-                <FormLabel text="会社名" htmlFor={buildId("companyName")} />
-                <FormInput
-                  id={buildId("companyName")}
-                  name="companyName"
-                  size="sm"
-                />
-              </div>
-            </div>
-            <div className="col">
-              <div>
-                <FormLabel text="都道府県" htmlFor={buildId("prefectureId")} />
-                <FormSelect
-                  id={buildId("prefectureId")}
-                  name="prefectureId"
-                  items={[
-                    { label: "", value: undefined },
-                    ...prefectures.map((pref) => ({
+          <Grid container columns={16} spacing={2}>
+            <Grid item xs={16} md={8}>
+              <Stack gap={2}>
+                <Stack gap={1}>
+                  <FormLabel
+                    htmlFor="customerCd"
+                    sx={{ alignSelf: "flex-start" }}
+                  >
+                    顧客コード
+                  </FormLabel>
+                  <FormInput size="small" name="customerCd" id="customerCd" />
+                </Stack>
+                <Stack gap={1}>
+                  <FormLabel htmlFor="name" sx={{ alignSelf: "flex-start" }}>
+                    顧客名
+                  </FormLabel>
+                  <FormInput size="small" name="name" id="name" />
+                </Stack>
+                <Stack gap={1}>
+                  <FormLabel htmlFor="kana" sx={{ alignSelf: "flex-start" }}>
+                    顧客名(カナ)
+                  </FormLabel>
+                  <FormInput size="small" name="kana" id="kana" />
+                </Stack>
+                <Stack gap={1}>
+                  <FormLabel
+                    htmlFor="companyName"
+                    sx={{ alignSelf: "flex-start" }}
+                  >
+                    会社名
+                  </FormLabel>
+                  <FormInput size="small" name="companyName" id="companyName" />
+                </Stack>
+              </Stack>
+            </Grid>
+            <Grid item xs={16} md={8}>
+              <Stack gap={2}>
+                <Stack gap={1}>
+                  <FormLabel
+                    htmlFor="prefecture"
+                    sx={{ alignSelf: "flex-start" }}
+                  >
+                    都道府県
+                  </FormLabel>
+                  <FormAutoComplete
+                    size="small"
+                    name="prefectureId"
+                    id="prefecture"
+                    items={prefectures.map((pref) => ({
                       label: pref.prefName,
-                      value: pref.id,
-                    })),
-                  ]}
-                  size="sm"
-                />
-              </div>
-              <div>
-                <FormLabel text="電話番号" htmlFor={buildId("phone")} />
-                <FormInput id={buildId("phone")} name="phone" size="sm" />
-              </div>
-              <div>
-                <FormLabel text="メールアドレス" htmlFor={buildId("email")} />
-                <FormInput id={buildId("email")} name="email" size="sm" />
-              </div>
-              <div>
-                <FormLabel text="最終取引日" />
-                <div className="d-flex">
-                  <div className="flex-grow-1">
-                    <FormInput name="lasttradeStart" size="sm" type="date" />
-                  </div>
-                  <div className="d-flex align-items-center">～</div>
-                  <div className="flex-grow-1">
-                    <FormInput name="lasttradeEnd" size="sm" type="date" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="pt-3">
-            <Button type="submit" className="px-3 py-1 me-1">
-              検索
-            </Button>
-            <Link
-              to={resetUrl}
-              className="px-3 py-1 btn-secondary btn"
-              reloadDocument
-            >
-              クリア
-            </Link>
-          </div>
+                      value: pref.id.toString(),
+                    }))}
+                  />
+                </Stack>
+                <Stack gap={1}>
+                  <FormLabel htmlFor="phone" sx={{ alignSelf: "flex-start" }}>
+                    電話番号
+                  </FormLabel>
+                  <FormInput size="small" name="phone" id="phone" />
+                </Stack>
+                <Stack gap={1}>
+                  <FormLabel htmlFor="email" sx={{ alignSelf: "flex-start" }}>
+                    メールアドレス
+                  </FormLabel>
+                  <FormInput size="small" name="email" id="email" />
+                </Stack>
+                <Stack gap={1}>
+                  <FormLabel
+                    htmlFor="lasttradeStart"
+                    sx={{ alignSelf: "flex-start" }}
+                  >
+                    最終取引日
+                  </FormLabel>
+                  <Stack
+                    direction="row"
+                    justifyContent="stretch"
+                    alignItems="center"
+                    gap={1}
+                  >
+                    <FormInput
+                      size="small"
+                      name="lasttradeStart"
+                      id="lasttradeStart"
+                      fullWidth
+                      type="date"
+                    />
+                    <div>～</div>
+                    <FormInput
+                      size="small"
+                      name="lasttradeEnd"
+                      fullWidth
+                      type="date"
+                    />
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Grid>
+          </Grid>
         </ValidatedForm>
-      </Card.Body>
+      </CardContent>
+      <CardActions sx={{ justifyContent: "flex-end", gap: 1 }}>
+        <Button variant="contained" type="submit" form={formId}>
+          検索
+        </Button>
+        <Button
+          variant="contained"
+          component={Link}
+          to={resetUrl}
+          reloadDocument
+        >
+          クリア
+        </Button>
+      </CardActions>
     </Card>
   );
 };

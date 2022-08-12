@@ -31,7 +31,7 @@ export const AppHeader: React.VFC<Props> = ({ maxWidth }) => {
       <Container maxWidth={maxWidth}>
         <Toolbar>
           <Typography
-            variant="h6"
+            variant="h5"
             component={Link}
             to="/customers"
             sx={{ textDecoration: "none", color: "inherit" }}
