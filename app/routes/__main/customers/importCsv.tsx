@@ -1,14 +1,14 @@
+import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 import type { ActionArgs } from "@remix-run/node";
 import {
   redirect,
   unstable_createFileUploadHandler,
   unstable_parseMultipartFormData,
 } from "@remix-run/node";
-import { Button } from "react-bootstrap";
+import { FormLabel } from "react-bootstrap";
+
 import { ValidatedForm, validationError } from "remix-validated-form";
-import { FormInput } from "~/components/FormInput";
-import { FormLabel } from "~/components/FormLabel";
-import { HorizontalFormRow } from "~/components/HorizontalFormRow";
+import { FileInput } from "~/components/FileInput";
 import { clientImportCsvFormValidator } from "~/forms/clientImportCsvForm";
 import { serverImportCsvFormValidator } from "~/forms/serverImportCsvForm.server";
 import { importCustomersFromCsv } from "~/services/importCustomersFromCsv.server";
@@ -33,22 +33,29 @@ export const action = async ({ request }: ActionArgs) => {
 export default function ImportCsv() {
   return (
     <div>
-      <h3>顧客情報のインポート</h3>
-      <ValidatedForm
-        validator={clientImportCsvFormValidator}
-        className="mt-3"
-        method="post"
-        encType="multipart/form-data"
-      >
-        <HorizontalFormRow
-          label={<FormLabel text="CSVファイル:" htmlFor="file" />}
-          input={<FormInput type="file" name="file" id="file" accept=".csv" />}
-        />
-
-        <div className="mt-3 text-end">
-          <Button type="submit">インポート</Button>
-        </div>
-      </ValidatedForm>
+      <Typography variant="h5">顧客情報のインポート</Typography>
+      <Box marginTop={3}>
+        <Card>
+          <CardContent>
+            <ValidatedForm
+              validator={clientImportCsvFormValidator}
+              className="mt-3"
+              method="post"
+              encType="multipart/form-data"
+            >
+              <FormLabel htmlFor="csvFile">CSVファイル</FormLabel>
+              <Box marginTop={1}>
+                <FileInput name="file" accept=".csv" id="csvFile" />
+              </Box>
+              <Box marginTop={3}>
+                <Button variant="contained" type="submit">
+                  インポート
+                </Button>
+              </Box>
+            </ValidatedForm>
+          </CardContent>
+        </Card>
+      </Box>
     </div>
   );
 }

@@ -59,9 +59,7 @@ export default function Index() {
 
   return (
     <div>
-      <Typography marginTop={3} variant="h5">
-        顧客一覧
-      </Typography>
+      <Typography variant="h5">顧客一覧</Typography>
       <Box marginTop={3}>
         <SearchCustomerForm prefectures={prefectures} method="get" />
       </Box>

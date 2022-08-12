@@ -15,7 +15,9 @@ export default function Main() {
     <Box marginBottom={5}>
       <AppHeader maxWidth="xl" />
       <Container maxWidth="xl">
-        <Outlet />
+        <Box paddingTop={3}>
+          <Outlet />
+        </Box>
       </Container>
     </Box>
   );
