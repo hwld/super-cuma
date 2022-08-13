@@ -1,7 +1,17 @@
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { Table } from "react-bootstrap";
 import { db } from "~/db.server";
 
 type RawSalesRanking = {
@@ -40,31 +50,35 @@ export default function Ranking() {
   const { salesByProduct } = useLoaderData<typeof loader>();
   return (
     <div>
-      <h3>製品別売上ランキング</h3>
-      <Table>
-        <thead>
-          <tr>
-            <th>順位</th>
-            <th>製品名</th>
-            <th>単価</th>
-            <th>売上個数</th>
-            <th>売上合計金額</th>
-          </tr>
-        </thead>
-        <tbody>
-          {salesByProduct.map((sale, i) => {
-            return (
-              <tr key={i}>
-                <td>{sale.ranking}</td>
-                <td>{sale.productName}</td>
-                <td>{sale.unitPrice}</td>
-                <td>{sale.sumAmount}</td>
-                <td>{sale.sumSales}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+      <Typography variant="h5">製品別売上ランキング</Typography>
+      <Box marginTop={3}>
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>順位</TableCell>
+                <TableCell>製品別</TableCell>
+                <TableCell>単価</TableCell>
+                <TableCell>売上個数</TableCell>
+                <TableCell>売上合計金額</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {salesByProduct.map((sale, i) => {
+                return (
+                  <TableRow key={i}>
+                    <TableCell>{sale.ranking}</TableCell>
+                    <TableCell>{sale.productName}</TableCell>
+                    <TableCell>{sale.unitPrice}</TableCell>
+                    <TableCell>{sale.sumAmount}</TableCell>
+                    <TableCell>{sale.sumSales}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </div>
   );
 }

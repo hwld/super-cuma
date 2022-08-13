@@ -1,4 +1,5 @@
 import {
+  Table,
   TableBody,
   TableCell,
   TableContainer,
@@ -7,7 +8,6 @@ import {
   Typography,
 } from "@mui/material";
 import { format } from "date-fns";
-import { Table } from "react-bootstrap";
 import type { Sale } from "~/models/sale";
 
 type Props = { sales: Sale[] };
@@ -29,7 +29,7 @@ export const SalesPageForPdf: React.VFC<Props> = ({ sales }) => {
       <body style={{ maxWidth: "70%", margin: "3rem auto" }}>
         <Typography variant="h5">売上一覧</Typography>
         <TableContainer>
-          <Table>
+          <Table size="small">
             <TableHead>
               <TableRow>
                 {headers.map((head, i) => {

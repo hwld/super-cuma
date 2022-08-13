@@ -1,7 +1,17 @@
-import type { LoaderArgs } from "@remix-run/node";
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { Table } from "react-bootstrap";
+
 import { IndustryPieChart } from "~/components/IndustryPieChart";
 import { db } from "~/db.server";
 
@@ -14,7 +24,7 @@ export type CustomersByIndustry = {
   customerCount: number;
 };
 
-export const loader = async (args: LoaderArgs) => {
+export const loader = async () => {
   const raw = (await db.$queryRaw`
   SELECT
     businessCategoryName,
@@ -45,28 +55,30 @@ export default function Industry() {
 
   return (
     <div>
-      <h3>業種ごとの顧客数</h3>
-      <div className="mt-3">
+      <Typography variant="h5">業種ごとの顧客数</Typography>
+      <Box marginTop={3} width={"100%"} height={"250px"}>
         <IndustryPieChart customersByIndustries={customersByIndustries} />
-      </div>
-      <Table>
-        <thead>
-          <tr>
-            <th>業種</th>
-            <th>顧客数</th>
-          </tr>
-        </thead>
-        <tbody>
-          {customersByIndustries.map((d, i) => {
-            return (
-              <tr key={i}>
-                <td>{d.businessCategoryName}</td>
-                <td>{d.customerCount}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+      </Box>
+      <TableContainer component={Paper}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>業種</TableCell>
+              <TableCell>顧客数</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {customersByIndustries.map((d, i) => {
+              return (
+                <TableRow key={i}>
+                  <TableCell>{d.businessCategoryName}</TableCell>
+                  <TableCell>{d.customerCount}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }

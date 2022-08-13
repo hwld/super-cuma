@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Paper,
+  Table,
   TableBody,
   TableCell,
   TableContainer,
@@ -12,7 +13,6 @@ import {
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { format } from "date-fns";
-import { Table } from "react-bootstrap";
 import { findSales } from "~/models/sale/finder.server";
 
 export const loader = async () => {
@@ -52,7 +52,7 @@ export default function SalesHome() {
       </Box>
       <Box marginTop={1}>
         <TableContainer component={Paper}>
-          <Table size="small" width="100%">
+          <Table size="small">
             <TableHead>
               <TableRow>
                 {headers.map((header, i) => {

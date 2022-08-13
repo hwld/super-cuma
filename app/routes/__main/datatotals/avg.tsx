@@ -1,7 +1,17 @@
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { Table } from "react-bootstrap";
 import { db } from "~/db.server";
 
 type Avg = {
@@ -34,25 +44,29 @@ export default function AVG() {
 
   return (
     <div>
-      <h3>平均客単価</h3>
-      <Table>
-        <thead>
-          <tr>
-            <th>顧客名</th>
-            <th>平均客単価</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rawAvgs.map((avg, i) => {
-            return (
-              <tr key={i}>
-                <td>{avg.customerName}</td>
-                <td>{avg.avgPayment}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+      <Typography variant="h5">平均客単価</Typography>
+      <Box marginTop={3}>
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>顧客名</TableCell>
+                <TableCell>平均客単価</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rawAvgs.map((avg, i) => {
+                return (
+                  <TableRow key={i}>
+                    <TableCell>{avg.customerName}</TableCell>
+                    <TableCell>{avg.avgPayment}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </div>
   );
 }

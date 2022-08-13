@@ -1,5 +1,12 @@
 import { useLayoutEffect, useState } from "react";
-import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 import type { CustomersByIndustry } from "~/routes/__main/datatotals/industry";
 
 const RADIAN = Math.PI / 180;
@@ -62,37 +69,28 @@ export const IndustryPieChart: React.VFC<Props> = ({
   }, []);
 
   return (
-    <PieChart width={350} height={250} id="industryPieChartId">
-      {/*
-       サーバー側とクライアント側でレンダリングされるsvgが異なるのか、svg内でレイアウトシフト
-       が起こるので、サーバーではレンダリングしないようにする
-      */}
-      {isClient && (
-        <>
-          <Legend
-            align="left"
-            layout="vertical"
-            verticalAlign="top"
-            width={100}
-          />
-          <Tooltip />
-          <Pie
-            startAngle={90}
-            endAngle={-270}
-            label={renderCustomizedLabel}
-            labelLine={false}
-            isAnimationActive={false}
-            data={customersByIndustries}
-            dataKey="customerCount"
-            nameKey="businessCategoryName"
-            legendType="square"
-          >
-            {customersByIndustries.map((_, i) => {
-              return <Cell key={i} fill={colors[i % colors.length]} />;
-            })}
-          </Pie>
-        </>
-      )}
-    </PieChart>
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart id="industryPieChartId">
+        <Legend align="center" layout="horizontal" verticalAlign="top" />
+        <Tooltip />
+        <Pie
+          height={1990}
+          width={1990}
+          startAngle={90}
+          endAngle={-270}
+          label={renderCustomizedLabel}
+          labelLine={false}
+          isAnimationActive={false}
+          data={customersByIndustries}
+          dataKey="customerCount"
+          nameKey="businessCategoryName"
+          legendType="square"
+        >
+          {customersByIndustries.map((_, i) => {
+            return <Cell key={i} fill={colors[i % colors.length]} />;
+          })}
+        </Pie>
+      </PieChart>
+    </ResponsiveContainer>
   );
 };
