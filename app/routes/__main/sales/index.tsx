@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -10,32 +11,80 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { format } from "date-fns";
-import { findSales } from "~/models/sale/finder.server";
+import { Pagination } from "~/components/Pagination";
+import { db } from "~/db.server";
+import { pagingFormSchema } from "~/forms/pagingForm";
+import { buildSearchParamObject } from "~/libs/buildSearchParamObject";
+import type { Sale } from "../../../models/sale";
 
-export const loader = async () => {
-  const sales = await findSales();
-  sales.sort((a, b) => {
-    return b.revenue - a.revenue;
-  });
-  return json({ sales });
+export const loader = async ({ request }: LoaderArgs) => {
+  const searchParams = buildSearchParamObject(request.url);
+
+  // prismaは計算された列での並び替えをサポートしていないので
+  // SQLを直接書く
+  // LIMIT, OFFSETが使えないDBのことは考えない
+
+  const limit = 10;
+  let currentPage = 1;
+  const pagingValid = pagingFormSchema.safeParse(searchParams);
+  if (pagingValid.success) {
+    currentPage = pagingValid.data.page;
+  }
+
+  const fromQuery = `
+    FROM
+      sale
+    LEFT JOIN product
+      ON (sale.productId = product.id)
+    LEFT JOIN customer
+      ON (sale.customerId = customer.id)
+    LEFT JOIN company
+      ON (customer.companyId = company.id)
+  `;
+
+  const rawData = await db.$queryRawUnsafe<
+    (Omit<Sale, "revenue"> & { revenue: BigInt })[]
+  >(`
+    SELECT
+      customer.name AS customerName
+      , companyName
+      , address1 AS address
+      , productName
+      , purchaseDate AS purchaseData
+      , amount
+      , unitPrice
+      , amount * unitPrice AS revenue
+    ${fromQuery}
+    ORDER BY 
+      revenue DESC
+    LIMIT ${limit}
+    OFFSET ${(currentPage - 1) * limit}
+  `);
+
+  const sales: Sale[] = rawData.map((raw) => ({
+    ...raw,
+    revenue: Number(raw.revenue),
+  }));
+
+  const allSalesCount = await db.$queryRawUnsafe<{ count: BigInt }[]>(`
+    SELECT
+      COUNT(*) as count
+    ${fromQuery}
+  `);
+
+  const allItems = Number(allSalesCount[0].count);
+  const allPages = Math.ceil(allItems / limit);
+
+  return json({ sales, allPages });
 };
 
 export default function SalesHome() {
-  const { sales } = useLoaderData<typeof loader>();
+  const { sales, allPages } = useLoaderData<typeof loader>();
 
-  const headers = [
-    "顧客名",
-    "会社名",
-    "住所",
-    "製品名",
-    "購入日",
-    "個数",
-    "単価",
-    "金額",
-  ];
   return (
     <div>
       <Typography variant="h5">売上一覧</Typography>
@@ -55,9 +104,14 @@ export default function SalesHome() {
           <Table size="small">
             <TableHead>
               <TableRow>
-                {headers.map((header, i) => {
-                  return <TableCell key={i}>{header}</TableCell>;
-                })}
+                <TableCell>"顧客名"</TableCell>
+                <TableCell>"会社名"</TableCell>
+                <TableCell>"住所"</TableCell>
+                <TableCell>"製品名"</TableCell>
+                <TableCell>"購入日"</TableCell>
+                <TableCell>"個数"</TableCell>
+                <TableCell>"単価"</TableCell>
+                <TableCell>"金額"</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -80,6 +134,9 @@ export default function SalesHome() {
             </TableBody>
           </Table>
         </TableContainer>
+        <Stack marginTop={1} alignItems="center">
+          <Pagination allPages={allPages} />
+        </Stack>
       </Box>
     </div>
   );

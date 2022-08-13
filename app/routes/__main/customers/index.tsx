@@ -180,14 +180,9 @@ export default function Index() {
           </Table>
         </TableContainer>
       </Box>
-      <Box
-        marginTop={1}
-        textAlign={"center"}
-        display={"flex"}
-        justifyContent={"center"}
-      >
+      <Stack marginTop={1} alignItems="center">
         <Pagination allPages={allPages} />
-      </Box>
+      </Stack>
     </div>
   );
 }
