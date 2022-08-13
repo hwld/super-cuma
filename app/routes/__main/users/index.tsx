@@ -1,7 +1,20 @@
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { Button, Table } from "react-bootstrap";
+
 import { findUsers } from "~/models/user/finder.server";
 import { authenticator } from "~/services/auth.server";
 
@@ -19,62 +32,71 @@ export default function UsersHome() {
 
   return (
     <div>
-      <h3>ユーザー一覧</h3>
+      <Typography variant="h5" marginBottom={3}>
+        ユーザー一覧
+      </Typography>
       {loggedInUser.isAdmin && (
-        <div className="text-end">
-          <Link to="add" className="btn btn-primary">
+        <Box textAlign="end" marginBottom={1}>
+          <Button variant="contained" component={Link} to="add">
             ユーザー登録
-          </Link>
-        </div>
+          </Button>
+        </Box>
       )}
-      <Table>
-        <thead>
-          <tr>
-            <th>ユーザーID</th>
-            <th>ユーザー名</th>
-            <th>更新・削除</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => {
-            return (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.username}</td>
+      <TableContainer component={Paper}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>ユーザーID</TableCell>
+              <TableCell>ユーザー名</TableCell>
+              <TableCell>更新・削除</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map((user) => {
+              return (
+                <TableRow key={user.id}>
+                  <TableCell>{user.id}</TableCell>
+                  <TableCell>{user.username}</TableCell>
 
-                {loggedInUser.isAdmin || loggedInUser.id === user.id ? (
-                  <td className="d-flex gap-1">
-                    <Link
-                      to={`edit/${user.id}`}
-                      className="btn btn-success btn-sm"
-                    >
-                      更新
-                    </Link>
-                    <fetcher.Form
-                      action={`delete/${user.id}`}
-                      method="delete"
-                      onSubmit={(e) => {
-                        const result =
-                          window.confirm(`ユーザー: ${user.username} を削除しても良いですか？
+                  {loggedInUser.isAdmin || loggedInUser.id === user.id ? (
+                    <TableCell>
+                      <Stack direction="row" gap={1}>
+                        <Button
+                          variant="contained"
+                          component={Link}
+                          to={`edit/${user.id}`}
+                        >
+                          更新
+                        </Button>
+                        <Box>
+                          <fetcher.Form
+                            action={`delete/${user.id}`}
+                            method="delete"
+                            onSubmit={(e) => {
+                              const result =
+                                window.confirm(`ユーザー: ${user.username} を削除しても良いですか？
                        `);
-                        if (!result) {
-                          e.preventDefault();
-                        }
-                      }}
-                    >
-                      <Button type="submit" className="btn btn-danger btn-sm">
-                        削除
-                      </Button>
-                    </fetcher.Form>
-                  </td>
-                ) : (
-                  <td></td>
-                )}
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+                              if (!result) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            <Button type="submit" variant="contained">
+                              削除
+                            </Button>
+                          </fetcher.Form>
+                        </Box>
+                      </Stack>
+                    </TableCell>
+                  ) : (
+                    <TableCell></TableCell>
+                  )}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }

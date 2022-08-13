@@ -1,10 +1,10 @@
-import { Button } from "react-bootstrap";
+import { Alert, Box, Button, FormLabel } from "@mui/material";
+
 import { ValidatedForm } from "remix-validated-form";
 import type { UserForm as UserFormData } from "~/forms/userForm";
 import { userFormValidator } from "~/forms/userForm";
 import { FormCheckbox } from "./FormCheckbox";
 import { FormInput } from "./FormInput";
-import { FormLabel } from "./FormLabel";
 import { HorizontalFormRow } from "./HorizontalFormRow";
 
 type Props = {
@@ -24,16 +24,26 @@ export const UserForm: React.VFC<Props> = ({
       method="post"
       defaultValues={defaultValues}
     >
-      {formError && <div className="alert alert-danger">{formError}</div>}
+      {formError && (
+        <Box marginBottom={3}>
+          <Alert severity="error">{formError}</Alert>
+        </Box>
+      )}
       <HorizontalFormRow
         label={
-          <FormLabel text="ユーザー名" required htmlFor="userForm-username" />
+          <FormLabel required htmlFor="userForm-username">
+            ユーザー名
+          </FormLabel>
         }
-        input={<FormInput id="userForm-username" name="username" />}
+        input={
+          <FormInput id="userForm-username" name="username" size="small" />
+        }
       />
       <HorizontalFormRow
         label={
-          <FormLabel text="パスワード" required htmlFor="userForm-password" />
+          <FormLabel required htmlFor="userForm-password">
+            パスワード
+          </FormLabel>
         }
         input={
           <FormInput
@@ -41,6 +51,7 @@ export const UserForm: React.VFC<Props> = ({
             name="password"
             type="password"
             autoComplete="new-password"
+            size="small"
           />
         }
       />
@@ -56,12 +67,11 @@ export const UserForm: React.VFC<Props> = ({
           }
         />
       )}
-
-      <div className="text-end">
-        <Button type="submit">
+      <Box marginTop={3} textAlign="end">
+        <Button variant="contained" type="submit">
           {defaultValues === undefined ? "登録" : "更新"}
         </Button>
-      </div>
+      </Box>
     </ValidatedForm>
   );
 };

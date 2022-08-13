@@ -1,3 +1,4 @@
+import { Box, Typography } from "@mui/material";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useActionData, useLoaderData } from "@remix-run/react";
@@ -80,12 +81,14 @@ export default function EditUser() {
 
   return (
     <div>
-      <h3>ユーザー編集</h3>
-      <UserForm
-        defaultValues={loaderData?.userForm ?? undefined}
-        formError={actionData?.formError ?? undefined}
-        adminLoggedIn={loaderData?.loggedInUser.isAdmin ?? undefined}
-      />
+      <Typography variant="h5">ユーザー編集</Typography>
+      <Box marginTop={3}>
+        <UserForm
+          defaultValues={loaderData?.userForm ?? undefined}
+          formError={actionData?.formError ?? undefined}
+          adminLoggedIn={loaderData?.loggedInUser.isAdmin ?? undefined}
+        />
+      </Box>
     </div>
   );
 }

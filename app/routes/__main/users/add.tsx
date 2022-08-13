@@ -1,3 +1,4 @@
+import { Box, Typography } from "@mui/material";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useActionData, useLoaderData } from "@remix-run/react";
@@ -53,11 +54,13 @@ export default function AddUser() {
 
   return (
     <div>
-      <h3 className="mb-4">ユーザー登録</h3>
-      <UserForm
-        formError={actionData?.formError ?? undefined}
-        adminLoggedIn={user.isAdmin}
-      />
+      <Typography variant="h5">ユーザー登録</Typography>
+      <Box marginTop={3}>
+        <UserForm
+          formError={actionData?.formError ?? undefined}
+          adminLoggedIn={user.isAdmin}
+        />
+      </Box>
     </div>
   );
 }

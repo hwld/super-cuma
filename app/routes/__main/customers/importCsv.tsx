@@ -1,11 +1,17 @@
-import { Box, Button, Card, CardContent, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  FormLabel,
+  Typography,
+} from "@mui/material";
 import type { ActionArgs } from "@remix-run/node";
 import {
   redirect,
   unstable_createFileUploadHandler,
   unstable_parseMultipartFormData,
 } from "@remix-run/node";
-import { FormLabel } from "react-bootstrap";
 
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { FileInput } from "~/components/FileInput";
