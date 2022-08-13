@@ -4,7 +4,6 @@ import { db } from "~/db.server";
 import type { CustomerForm } from "~/forms/customerForm";
 import type { CustomerSearchForm } from "~/forms/customerSearchForm";
 import type { SortCustomerForm } from "~/forms/sortCustomerForm";
-import type { CustomersRequest } from "~/requests/buildCustomersRequest.server";
 import { emptyToUndefined } from "~/utils/emptyToUndefined";
 import { nullsToUndefineds } from "~/utils/nullToUndefined";
 import type { Customer } from ".";
@@ -146,76 +145,54 @@ export const updateCustomer = async (args: UpdateCustomerArgs) => {
   });
 };
 
-export const buildCustomersWhere = (
-  searchForm: CustomerSearchForm
-): Prisma.CustomerWhereInput => {
+export const buildCustomersSearchInput = (
+  searchForm: CustomerSearchForm | undefined
+): { where: Prisma.CustomerWhereInput } | undefined => {
+  if (searchForm === undefined) {
+    return undefined;
+  }
+
   //空文字をundefinedに変換する
   const searchParam = emptyToUndefined(searchForm);
 
   return {
-    customerCd: { contains: searchParam.customerCd },
-    name: { contains: searchParam.name },
-    kana: { contains: searchParam.kana },
-    company: { companyName: { contains: searchParam.companyName } },
-    prefecture: {
-      id: searchParam.prefectureId
-        ? Number(searchParam.prefectureId)
-        : undefined,
-    },
-    phone: { contains: searchParam.phone },
-    email: { contains: searchParam.email },
-    lasttrade: {
-      gte: searchParam.lasttradeStart
-        ? new Date(searchParam.lasttradeStart)
-        : undefined,
-      lte: searchParam.lasttradeEnd
-        ? new Date(searchParam.lasttradeEnd)
-        : undefined,
+    where: {
+      customerCd: { contains: searchParam.customerCd },
+      name: { contains: searchParam.name },
+      kana: { contains: searchParam.kana },
+      company: { companyName: { contains: searchParam.companyName } },
+      prefecture: {
+        id: searchParam.prefectureId
+          ? Number(searchParam.prefectureId)
+          : undefined,
+      },
+      phone: { contains: searchParam.phone },
+      email: { contains: searchParam.email },
+      lasttrade: {
+        gte: searchParam.lasttradeStart
+          ? new Date(searchParam.lasttradeStart)
+          : undefined,
+        lte: searchParam.lasttradeEnd
+          ? new Date(searchParam.lasttradeEnd)
+          : undefined,
+      },
     },
   };
 };
 
-export const buildCustomersOrderBy = (
-  sortForm: SortCustomerForm
-): Prisma.CustomerFindManyArgs["orderBy"] => {
+export const buildCustomersSortInput = (
+  sortForm: SortCustomerForm | undefined
+): { orderBy: Prisma.CustomerFindManyArgs["orderBy"] } | undefined => {
+  if (sortForm === undefined) {
+    return undefined;
+  }
+
   const { orderBy, order } = sortForm;
   if (orderBy === "company") {
-    return { company: { companyName: order } };
+    return { orderBy: { company: { companyName: order } } };
   } else if (orderBy === "prefecture") {
-    return { prefecture: { prefName: order } };
+    return { orderBy: { prefecture: { prefName: order } } };
   } else {
-    return { [orderBy]: order };
+    return { orderBy: { [orderBy]: order } };
   }
-};
-
-export const findCustomersByRequest = async (
-  request: CustomersRequest
-): Promise<{ customers: Customer[]; allPages: number }> => {
-  const { searchForm, pagingForm, sortForm } = request;
-
-  // 検索
-  const findCustomersWhere = searchForm
-    ? buildCustomersWhere(searchForm)
-    : undefined;
-
-  // ページング
-  const limit = 10;
-  const currentPage = pagingForm ? pagingForm.page : 1;
-
-  // ソート
-  let orderByInput = sortForm ? buildCustomersOrderBy(sortForm) : undefined;
-
-  const customers = await findCustomers({
-    where: findCustomersWhere,
-    skip: (currentPage - 1) * limit,
-    take: limit,
-    orderBy: orderByInput,
-  });
-
-  const allCustomersCount = await db.customer.count({
-    where: findCustomersWhere,
-  });
-  const allPages = Math.ceil(allCustomersCount / limit);
-
-  return { customers, allPages };
 };

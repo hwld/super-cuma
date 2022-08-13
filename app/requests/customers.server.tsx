@@ -15,23 +15,16 @@ export const buildCustomersRequest = (request: Request): CustomersRequest => {
   const searchParams = buildSearchParamObject(request.url);
 
   // 検索フォーム
-  const searchFormValidResult =
-    customerSearchFormSchema.safeParse(searchParams);
-  const searchForm = searchFormValidResult.success
-    ? searchFormValidResult.data
-    : undefined;
+  const searchFormValid = customerSearchFormSchema.safeParse(searchParams);
+  const searchForm = searchFormValid.success ? searchFormValid.data : undefined;
 
   // ページングフォーム
-  const pagingFormValidResult = pagingFormSchema.safeParse(searchParams);
-  const pagingForm = pagingFormValidResult.success
-    ? pagingFormValidResult.data
-    : undefined;
+  const pagingFormValid = pagingFormSchema.safeParse(searchParams);
+  const pagingForm = pagingFormValid.success ? pagingFormValid.data : undefined;
 
   // ソートフォーム
-  const sortFormValidResult = sortCustomerFormSchema.safeParse(searchParams);
-  const sortForm = sortFormValidResult.success
-    ? sortFormValidResult.data
-    : undefined;
+  const sortFormValid = sortCustomerFormSchema.safeParse(searchParams);
+  const sortForm = sortFormValid.success ? sortFormValid.data : undefined;
 
   return { searchForm, pagingForm, sortForm };
 };

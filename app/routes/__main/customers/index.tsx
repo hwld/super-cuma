@@ -17,22 +17,42 @@ import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { Pagination } from "~/components/Pagination";
 import { SearchCustomerForm } from "~/components/SearchCustomerForm";
 import { SortableTh } from "~/components/SortableTh";
+import { db } from "~/db.server";
 import { useSortCustomerState } from "~/libs/useSortCustomerState";
 import type { Customer } from "~/models/customer";
-import { findCustomersByRequest } from "~/models/customer/finder.server";
+import {
+  buildCustomersSearchInput,
+  buildCustomersSortInput,
+  findCustomers,
+} from "~/models/customer/finder.server";
 import { findPrefectures } from "~/models/prefecture/finder.server";
-import { buildCustomersRequest } from "~/requests/buildCustomersRequest.server";
+import { buildCustomersRequest } from "~/requests/customers.server";
 import { requireAuthentication } from "~/services/auth.server";
+import { paginate } from "~/utils/paging.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const user = await requireAuthentication(request);
 
-  const customersRequest = buildCustomersRequest(request);
+  // requestから、処理に必要なformDataを抽出する
+  const { searchForm, sortForm, pagingForm } = buildCustomersRequest(request);
 
-  const { customers, allPages } = await findCustomersByRequest(
-    customersRequest
-  );
+  // searchForm,sortFormから、検索、並び替えに必要なfindへの入力を組み立てる
+  const searchInput = buildCustomersSearchInput(searchForm);
+  const sortInput = buildCustomersSortInput(sortForm);
 
+  // findへのすべての入力と、pagingForm、1ページの最大件数などを渡して、
+  // findへの最終的な入力と、全ページ数を取得する
+  // 全ページ数を取得するには、すべてのデータを数える必要があるので、countを呼び出せるオブジェクトを
+  // 渡す。
+  // ここではdb.customerを渡すことによって、渡された入力に該当するcustomerの数を求めることができる。
+  const limit = 10;
+  const { findInput, allPages } = await paginate({
+    input: { ...searchInput, ...sortInput },
+    pagingData: { form: pagingForm, limit },
+    countable: db.customer,
+  });
+
+  const customers = await findCustomers({ ...findInput });
   const prefectures = await findPrefectures();
 
   return json({ customers, prefectures, allPages, user });
