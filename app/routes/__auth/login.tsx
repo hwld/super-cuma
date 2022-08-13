@@ -1,11 +1,21 @@
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  FormLabel,
+  Stack,
+} from "@mui/material";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { Button, Card } from "react-bootstrap";
 import { AuthorizationError } from "remix-auth";
 import { ValidatedForm } from "remix-validated-form";
 import { FormInput } from "~/components/FormInput";
-import { FormLabel } from "~/components/FormLabel";
+
 import { loginFormValidator } from "~/forms/loginForm";
 import { authenticator } from "~/services/auth.server";
 
@@ -38,40 +48,51 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Login() {
+  const formId = "loginForm";
   const actionData = useActionData<typeof action>();
 
   return (
-    <div className="d-flex justify-content-center mt-5">
-      <ValidatedForm
-        validator={loginFormValidator}
-        className="card"
-        style={{ width: "500px", maxWidth: "100%" }}
-        method="post"
-      >
-        <Card.Header>ログイン</Card.Header>
-        <Card.Body>
-          {actionData?.message && (
-            <div className="alert alert-danger">{actionData.message}</div>
-          )}
-          <div className="mb-1">
-            <FormLabel text="ユーザー名" />
-            <FormInput name="username" />
-          </div>
-          <div>
-            <FormLabel text="パスワード" />
-            <FormInput
-              name="password"
-              type="password"
-              autoComplete="current-password"
-            />
-          </div>
-          <div className="text-end mt-3">
-            <Button type="submit" className="px-3 py-1">
+    <div>
+      <Stack alignItems="center" marginTop={10}>
+        <Card sx={{ width: "500px" }}>
+          <CardHeader title="ログイン" />
+          <CardContent>
+            <ValidatedForm
+              id={formId}
+              validator={loginFormValidator}
+              className="card"
+              style={{ width: "100%" }}
+              method="post"
+            >
+              {actionData?.message && (
+                <Box marginBottom={3}>
+                  <Alert severity="error">{actionData.message}</Alert>
+                </Box>
+              )}
+              <Stack spacing={2}>
+                <Box>
+                  <FormLabel>ユーザー名</FormLabel>
+                  <FormInput name="username" size="small" />
+                </Box>
+                <Box>
+                  <FormLabel>パスワード</FormLabel>
+                  <FormInput
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    size="small"
+                  />
+                </Box>
+              </Stack>
+            </ValidatedForm>
+          </CardContent>
+          <CardActions sx={{ justifyContent: "flex-end" }}>
+            <Button type="submit" variant="contained" form={formId}>
               ログイン
             </Button>
-          </div>
-        </Card.Body>
-      </ValidatedForm>
+          </CardActions>
+        </Card>
+      </Stack>
     </div>
   );
 }

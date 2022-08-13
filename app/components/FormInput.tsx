@@ -8,7 +8,7 @@ type Props = {
   id?: string;
   label?: string;
   size?: TextFieldProps["size"];
-  fullWidth?: boolean;
+  autoComplete?: TextFieldProps["autoComplete"];
 };
 export const FormInput: React.VFC<Props> = ({
   name,
@@ -16,7 +16,7 @@ export const FormInput: React.VFC<Props> = ({
   label,
   size,
   type,
-  fullWidth,
+  autoComplete,
 }) => {
   const { getInputProps, error } = useField(name);
   return (
@@ -27,6 +27,7 @@ export const FormInput: React.VFC<Props> = ({
       error={error !== undefined}
       helperText={error}
       fullWidth
+      autoComplete={autoComplete}
       {...getInputProps({ id })}
     />
   );

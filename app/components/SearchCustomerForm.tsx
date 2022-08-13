@@ -134,16 +134,10 @@ export const SearchCustomerForm: React.VFC<Props> = ({
                       size="small"
                       name="lasttradeStart"
                       id="lasttradeStart"
-                      fullWidth
                       type="date"
                     />
                     <div>～</div>
-                    <FormInput
-                      size="small"
-                      name="lasttradeEnd"
-                      fullWidth
-                      type="date"
-                    />
+                    <FormInput size="small" name="lasttradeEnd" type="date" />
                   </Stack>
                 </Stack>
               </Stack>
