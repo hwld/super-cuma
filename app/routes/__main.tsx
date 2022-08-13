@@ -14,7 +14,7 @@ export default function Main() {
   return (
     <Box marginBottom={5}>
       <AppHeader maxWidth="lg" />
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" component="main">
         <Box paddingTop={3}>
           <Outlet />
         </Box>

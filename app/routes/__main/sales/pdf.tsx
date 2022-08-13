@@ -10,6 +10,9 @@ export const loader = async ({ request }: LoaderArgs) => {
   await authenticator.isAuthenticated(request, { failureRedirect: "/login" });
 
   const sales = await findSales();
+  sales.sort((a, b) => {
+    return b.revenue - a.revenue;
+  });
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
