@@ -60,7 +60,6 @@ export default function Login() {
             <ValidatedForm
               id={formId}
               validator={loginFormValidator}
-              className="card"
               style={{ width: "100%" }}
               method="post"
             >

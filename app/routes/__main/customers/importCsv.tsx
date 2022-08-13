@@ -45,7 +45,6 @@ export default function ImportCsv() {
           <CardContent>
             <ValidatedForm
               validator={clientImportCsvFormValidator}
-              className="mt-3"
               method="post"
               encType="multipart/form-data"
             >

@@ -14,14 +14,14 @@ export const FormSelect: React.VFC<Props> = ({
   items,
   size = "medium",
 }) => {
-  const { getInputProps, error, defaultValue } = useField(name);
+  const { error, defaultValue } = useField(name);
 
   return (
     <div>
       <Select
         size={size}
         fullWidth
-        {...getInputProps()}
+        name={name}
         defaultValue={defaultValue ?? items[0].value}
       >
         {items.map((item, i) => {
@@ -32,20 +32,6 @@ export const FormSelect: React.VFC<Props> = ({
           );
         })}
       </Select>
-      {/* <select
-        className={`form-select ${error ? "is-invalid" : ""} ${
-          size === "sm" ? "form-select-sm" : ""
-        }`}
-        {...getInputProps({ id })}
-      >
-        {items.map((item, i) => {
-          return (
-            <option key={i} value={item.value}>
-              {item.label}
-            </option>
-          );
-        })}
-      </select> */}
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </div>
   );
