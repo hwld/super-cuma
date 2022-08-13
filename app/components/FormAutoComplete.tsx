@@ -1,5 +1,5 @@
 import { Autocomplete, TextField } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useControlField, useField } from "remix-validated-form";
 
 type Props = {
@@ -8,7 +8,6 @@ type Props = {
   label?: string;
   id?: string;
   items: { label: string; value: string }[];
-  allowEmpty?: boolean;
 };
 export const FormAutoComplete: React.VFC<Props> = ({
   size,
@@ -16,37 +15,25 @@ export const FormAutoComplete: React.VFC<Props> = ({
   label,
   id,
   items,
-  allowEmpty = false,
 }) => {
   const { error, validate } = useField(name);
   const [inputValue, setInputValue] = useControlField<string | undefined>(name);
 
-  const defaultItem = useMemo(
-    () => (allowEmpty ? { label: "", value: "" } : items[0]),
-    [allowEmpty, items]
-  );
   const [item, setItem] = useState<{ label: string; value: string }>(
-    items.find(({ value }) => value === inputValue) ?? defaultItem
+    items.find(({ value }) => value === inputValue) ?? items[0]
   );
-
-  const options = useMemo(() => {
-    if (allowEmpty) {
-      return [defaultItem, ...items];
-    }
-    return items;
-  }, [allowEmpty, defaultItem, items]);
 
   return (
     <>
       <Autocomplete
         id={id}
         size={size}
-        options={options}
+        options={items}
         isOptionEqualToValue={(opt, value) => {
           return opt.label === value.label && opt.value === value.value;
         }}
         onChange={(_, item) => {
-          setItem(item ?? defaultItem);
+          setItem(item ?? items[0]);
           setInputValue(item?.value ?? "");
           validate();
         }}
@@ -62,7 +49,7 @@ export const FormAutoComplete: React.VFC<Props> = ({
           );
         }}
       />
-      <input hidden value={inputValue ?? ""} readOnly name={name} />
+      <input hidden value={inputValue ?? items[0].value} readOnly name={name} />
     </>
   );
 };

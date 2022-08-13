@@ -98,11 +98,13 @@ export const SearchCustomerForm: React.VFC<Props> = ({
                     size="small"
                     name="prefectureId"
                     id="prefecture"
-                    items={prefectures.map((pref) => ({
-                      label: pref.prefName,
-                      value: pref.id.toString(),
-                    }))}
-                    allowEmpty
+                    items={[
+                      { label: "", value: "" },
+                      ...prefectures.map((pref) => ({
+                        label: pref.prefName,
+                        value: pref.id.toString(),
+                      })),
+                    ]}
                   />
                 </Stack>
                 <Stack gap={1}>

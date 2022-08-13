@@ -103,10 +103,13 @@ export const CustomerForm: React.VFC<Props> = ({
           <FormAutoComplete
             name="prefectureId"
             size="small"
-            items={prefectures.map((pref) => ({
-              label: pref.prefName,
-              value: pref.id.toString(),
-            }))}
+            items={[
+              { label: "", value: "" },
+              ...prefectures.map((pref) => ({
+                label: pref.prefName,
+                value: pref.id.toString(),
+              })),
+            ]}
           />
         }
       />

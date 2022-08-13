@@ -17,9 +17,9 @@ export const customerFormSchema = z
       .max(50, "50文字以下で入力してください"),
     // 1男 2女
     gender: z.string().regex(/[12]/, "1(男)または2(女)で入力してください"),
-    companyId: z.string(),
+    companyId: z.string().min(1, "会社を選択してください"),
     zip: z.string().max(10, "10文字以下で入力してください").optional(),
-    prefectureId: z.string(),
+    prefectureId: z.string().min(1, "都道府県を選択してください"),
     address1: z.string().optional(),
     address2: z.string().optional(),
     phone: z
