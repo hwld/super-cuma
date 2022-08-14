@@ -37,9 +37,7 @@ export const FileInput: React.VFC<Props> = ({ name, accept, id }) => {
           id={id}
         />
         <Box marginLeft={"5px"} sx={{ display: "flex", alignItems: "center" }}>
-          <Button variant="contained" onClick={openFileDialog}>
-            選択
-          </Button>
+          <Button onClick={openFileDialog}>選択</Button>
         </Box>
       </Stack>
       <input

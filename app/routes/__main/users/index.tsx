@@ -53,7 +53,7 @@ export default function UsersHome() {
       </Typography>
       {loggedInUser.isAdmin && (
         <Box textAlign="end" marginBottom={1}>
-          <Button variant="contained" component={Link} to="add">
+          <Button component={Link} to="add">
             ユーザー登録
           </Button>
         </Box>
@@ -77,11 +77,7 @@ export default function UsersHome() {
                   {loggedInUser.isAdmin || loggedInUser.id === user.id ? (
                     <TableCell>
                       <Stack direction="row" gap={1}>
-                        <Button
-                          variant="contained"
-                          component={Link}
-                          to={`edit/${user.id}`}
-                        >
+                        <Button component={Link} to={`edit/${user.id}`}>
                           更新
                         </Button>
                         <Box>
@@ -97,9 +93,7 @@ export default function UsersHome() {
                               }
                             }}
                           >
-                            <Button type="submit" variant="contained">
-                              削除
-                            </Button>
+                            <Button type="submit">削除</Button>
                           </fetcher.Form>
                         </Box>
                       </Stack>

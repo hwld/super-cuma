@@ -88,13 +88,7 @@ export default function SalesHome() {
     <div>
       <Typography variant="h5">売上一覧</Typography>
       <Box marginTop={3}>
-        <Button
-          variant="contained"
-          component={Link}
-          to="pdf"
-          reloadDocument
-          target="_blank"
-        >
+        <Button component={Link} to="pdf" reloadDocument target="_blank">
           帳票出力
         </Button>
       </Box>

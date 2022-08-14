@@ -1,4 +1,3 @@
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import type { Breakpoint } from "@mui/material";
 import {
   AppBar,
@@ -7,11 +6,13 @@ import {
   Container,
   Menu,
   MenuItem,
+  Stack,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { Link } from "@remix-run/react";
 import { useState } from "react";
+import { NavButton } from "./NavButton";
 
 type Props = { maxWidth?: Breakpoint };
 export const AppHeader: React.VFC<Props> = ({ maxWidth }) => {
@@ -27,7 +28,7 @@ export const AppHeader: React.VFC<Props> = ({ maxWidth }) => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: "" }}>
       <Container maxWidth={maxWidth}>
         <Toolbar>
           <Typography
@@ -39,37 +40,47 @@ export const AppHeader: React.VFC<Props> = ({ maxWidth }) => {
             顧客管理システム
           </Typography>
           <Box
+            component="nav"
             sx={{ flexGrow: 1, display: "flex", justifyContent: "flex-end" }}
           >
-            <Button sx={{ color: "white" }} component={Link} to="/customers">
-              顧客
-            </Button>
-            <Button sx={{ color: "white" }} component={Link} to="/sales">
-              売上
-            </Button>
-            <Button sx={{ color: "white" }} onClick={handleClickMenu}>
-              データ集計
-              <ArrowDropDownIcon />
-            </Button>
-            <Menu anchorEl={anchorEl} open={open} onClose={handleCloseMenu}>
-              <MenuItem component={Link} to="/datatotals/industry">
-                業種ごとの顧客数
-              </MenuItem>
-              <MenuItem component={Link} to="/datatotals/ranking">
-                製品別売上ランキング
-              </MenuItem>
-              <MenuItem component={Link} to="/datatotals/avg">
-                平均客単価
-              </MenuItem>
-            </Menu>
-            <Button sx={{ color: "white" }} component={Link} to="/users">
-              ユーザー
-            </Button>
-            <form action="/logout" method="post">
-              <Button sx={{ color: "white" }} type="submit">
-                ログアウト
-              </Button>
-            </form>
+            <Stack component="ul" direction="row" alignItems="center">
+              <Box component="li" sx={{ listStyle: "none" }}>
+                <NavButton component={Link} to="/customers">
+                  顧客
+                </NavButton>
+              </Box>
+              <Box component="li" sx={{ listStyle: "none" }}>
+                <NavButton component={Link} to="/sales">
+                  売上
+                </NavButton>
+              </Box>
+              <Box component="li" sx={{ listStyle: "none" }}>
+                <NavButton onClick={handleClickMenu}>データ集計</NavButton>
+              </Box>
+              <Menu anchorEl={anchorEl} open={open} onClose={handleCloseMenu}>
+                <MenuItem component={Link} to="/datatotals/industry">
+                  業種ごとの顧客数
+                </MenuItem>
+                <MenuItem component={Link} to="/datatotals/ranking">
+                  製品別売上ランキング
+                </MenuItem>
+                <MenuItem component={Link} to="/datatotals/avg">
+                  平均客単価
+                </MenuItem>
+              </Menu>
+              <Box component="li" sx={{ listStyle: "none" }}>
+                <NavButton component={Link} to="/users">
+                  ユーザー
+                </NavButton>
+              </Box>
+              <Box component="li" sx={{ listStyle: "none" }} marginLeft={1}>
+                <form action="/logout" method="post">
+                  <Button color="error" type="submit">
+                    ログアウト
+                  </Button>
+                </form>
+              </Box>
+            </Stack>
           </Box>
         </Toolbar>
       </Container>

@@ -148,15 +148,10 @@ export const SearchCustomerForm: React.VFC<Props> = ({
         </ValidatedForm>
       </CardContent>
       <CardActions sx={{ justifyContent: "flex-end", gap: 1 }}>
-        <Button variant="contained" type="submit" form={formId}>
+        <Button type="submit" form={formId}>
           検索
         </Button>
-        <Button
-          variant="contained"
-          component={Link}
-          to={resetUrl}
-          reloadDocument
-        >
+        <Button component={Link} to={resetUrl} reloadDocument>
           クリア
         </Button>
       </CardActions>

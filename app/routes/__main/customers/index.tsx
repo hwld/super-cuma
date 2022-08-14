@@ -85,18 +85,13 @@ export default function Index() {
       </Box>
       {user.isAdmin && (
         <Stack direction="row" justifyContent="flex-end" gap={1} marginTop={3}>
-          <Button variant="contained" component={Link} to="importCsv">
+          <Button component={Link} to="importCsv">
             インポート
           </Button>
-          <Button
-            variant="contained"
-            component={Link}
-            to="exportCsv"
-            reloadDocument
-          >
+          <Button component={Link} to="exportCsv" reloadDocument>
             エクスポート
           </Button>
-          <Button variant="contained" component={Link} to="add">
+          <Button component={Link} to="add">
             新規登録
           </Button>
         </Stack>
@@ -136,7 +131,6 @@ export default function Index() {
                       <TableCell>
                         <Stack direction="row" gap={1} alignItems="center">
                           <Button
-                            variant="contained"
                             component={Link}
                             to={`/customers/edit/${customer.id}`}
                             size="small"
@@ -161,11 +155,7 @@ export default function Index() {
                                 name="customerId"
                                 defaultValue={customer.id}
                               />
-                              <Button
-                                type="submit"
-                                variant="contained"
-                                size="small"
-                              >
+                              <Button type="submit" size="small">
                                 削除
                               </Button>
                             </fetcher.Form>

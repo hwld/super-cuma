@@ -157,7 +157,7 @@ export const CustomerForm: React.VFC<Props> = ({
         }
       />
       <Box textAlign="end">
-        <Button type="submit" variant="contained">
+        <Button type="submit">
           {defaultValues === undefined ? "登録" : "更新"}
         </Button>
       </Box>

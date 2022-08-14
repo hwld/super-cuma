@@ -68,7 +68,7 @@ export const UserForm: React.VFC<Props> = ({
         />
       )}
       <Box marginTop={3} textAlign="end">
-        <Button variant="contained" type="submit">
+        <Button type="submit">
           {defaultValues === undefined ? "登録" : "更新"}
         </Button>
       </Box>

@@ -86,7 +86,7 @@ export default function Login() {
             </ValidatedForm>
           </CardContent>
           <CardActions sx={{ justifyContent: "flex-end" }}>
-            <Button type="submit" variant="contained" form={formId}>
+            <Button type="submit" form={formId}>
               ログイン
             </Button>
           </CardActions>

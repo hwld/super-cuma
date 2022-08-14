@@ -53,9 +53,7 @@ export default function ImportCsv() {
                 <FileInput name="file" accept=".csv" id="csvFile" />
               </Box>
               <Box marginTop={3}>
-                <Button variant="contained" type="submit">
-                  インポート
-                </Button>
+                <Button type="submit">インポート</Button>
               </Box>
             </ValidatedForm>
           </CardContent>
