@@ -46,7 +46,7 @@ export const Pagination: React.VFC<Props> = ({ allPages }) => {
       showFirstButton
       showLastButton
       count={allPages}
-      defaultPage={currentPage}
+      page={currentPage}
       renderItem={(item) => {
         if (item.page === null) {
           return <PaginationItem {...item} />;
