@@ -14,20 +14,36 @@ import {
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { Pagination } from "~/components/Pagination";
+import { db } from "~/db.server";
 
 import { findUsers } from "~/models/user/finder.server";
+import { buildUsersRequest } from "~/requests/users.server";
 import { authenticator } from "~/services/auth.server";
+import { paginate } from "~/utils/paging.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const loggedInUser = await authenticator.isAuthenticated(request, {
     failureRedirect: "/login",
   });
-  const users = await findUsers();
-  return json({ users, loggedInUser });
+
+  const { pagingForm } = await buildUsersRequest(request);
+  const { findInput, allPages } = await paginate({
+    input: {},
+    countable: db.user,
+    pagingData: {
+      form: pagingForm,
+      limit: 10,
+    },
+  });
+
+  const users = await findUsers({ ...findInput });
+
+  return json({ users, loggedInUser, allPages });
 };
 
 export default function UsersHome() {
-  const { users, loggedInUser } = useLoaderData<typeof loader>();
+  const { users, loggedInUser, allPages } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
 
   return (
@@ -97,6 +113,9 @@ export default function UsersHome() {
           </TableBody>
         </Table>
       </TableContainer>
+      <Stack marginTop={1} alignItems="center">
+        <Pagination allPages={allPages} />
+      </Stack>
     </div>
   );
 }

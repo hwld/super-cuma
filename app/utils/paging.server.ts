@@ -17,7 +17,7 @@ export const paginate = async <
   countable,
 }: PaginateArgs<Countable, T>) => {
   const currentPage = form ? form.page : 1;
-  const findInput = { skip: (currentPage - 1) * limit, take: limit };
+  const findInput = { ...input, skip: (currentPage - 1) * limit, take: limit };
 
   const allItems = await countable.count(input);
   const allPages = Math.ceil(allItems / limit);

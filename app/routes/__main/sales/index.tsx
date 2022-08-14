@@ -35,22 +35,11 @@ export const loader = async ({ request }: LoaderArgs) => {
     currentPage = pagingValid.data.page;
   }
 
-  const fromQuery = `
-    FROM
-      sale
-    LEFT JOIN product
-      ON (sale.productId = product.id)
-    LEFT JOIN customer
-      ON (sale.customerId = customer.id)
-    LEFT JOIN company
-      ON (customer.companyId = company.id)
-  `;
-
-  const rawData = await db.$queryRawUnsafe<
-    (Omit<Sale, "revenue"> & { revenue: BigInt })[]
-  >(`
+  const rawData = await db.$queryRaw<
+    (Omit<Sale, "revenue"> & { revenue: BigInt } & { allCount: BigInt })[]
+  >`
     SELECT
-      customer.name AS customerName
+    customer.name AS customerName
       , companyName
       , address1 AS address
       , productName
@@ -58,26 +47,36 @@ export const loader = async ({ request }: LoaderArgs) => {
       , amount
       , unitPrice
       , amount * unitPrice AS revenue
-    ${fromQuery}
+      , allCount
+    FROM
+      sale
+      LEFT JOIN product
+        ON (sale.productId = product.id)
+      LEFT JOIN customer
+        ON (sale.customerId = customer.id)
+      LEFT JOIN company
+        ON (customer.companyId = company.id)
+      CROSS JOIN (
+        SELECT
+          COUNT(*) as allCount
+        FROM
+          sale
+      )
     ORDER BY 
       revenue DESC
     LIMIT ${limit}
     OFFSET ${(currentPage - 1) * limit}
-  `);
+  `;
 
-  const sales: Sale[] = rawData.map((raw) => ({
-    ...raw,
-    revenue: Number(raw.revenue),
-  }));
+  const sales: Sale[] = rawData.map((raw) => {
+    const { allCount, ...salesData } = raw;
+    return {
+      ...salesData,
+      revenue: Number(raw.revenue),
+    };
+  });
 
-  const allSalesCount = await db.$queryRawUnsafe<{ count: BigInt }[]>(`
-    SELECT
-      COUNT(*) as count
-    ${fromQuery}
-  `);
-
-  const allItems = Number(allSalesCount[0].count);
-  const allPages = Math.ceil(allItems / limit);
+  const allPages = Math.ceil(Number(rawData[0].allCount) / limit);
 
   return json({ sales, allPages });
 };
@@ -104,14 +103,14 @@ export default function SalesHome() {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>"顧客名"</TableCell>
-                <TableCell>"会社名"</TableCell>
-                <TableCell>"住所"</TableCell>
-                <TableCell>"製品名"</TableCell>
-                <TableCell>"購入日"</TableCell>
-                <TableCell>"個数"</TableCell>
-                <TableCell>"単価"</TableCell>
-                <TableCell>"金額"</TableCell>
+                <TableCell>顧客名</TableCell>
+                <TableCell>会社名</TableCell>
+                <TableCell>住所</TableCell>
+                <TableCell>製品名</TableCell>
+                <TableCell>購入日</TableCell>
+                <TableCell>個数</TableCell>
+                <TableCell>単価</TableCell>
+                <TableCell>金額</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
